@@ -1,0 +1,10 @@
+BEGIN:VCARD
+VERSION:2.1
+FN:Anderson Brent
+ORG:Authors, Inc.
+TITLE:Primary school teacher
+TEL;WORK;VOICE:+1-244-415-7541x108
+ADR;WORK:;;100 Flat Grape Dr.;Fresno;CA;95555;United States of America
+EMAIL;PREF;INTERNET:brent.ander@russell.com
+REV:20150922T195243Z
+END:VCARD

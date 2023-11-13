@@ -1,0 +1,10 @@
+BEGIN:VCARD
+VERSION:2.1
+FN:Kelley Sarah
+ORG:Authors, Inc.
+TITLE:Sports coach
+TEL;WORK;VOICE:(268)523-1548
+ADR;WORK:;;100 Flat Grape Dr.;Fresno;CA;95555;United States of America
+EMAIL;PREF;INTERNET:sarah.kelle@davis.com
+REV:20150922T195243Z
+END:VCARD

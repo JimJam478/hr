@@ -1,0 +1,10 @@
+BEGIN:VCARD
+VERSION:2.1
+FN:Smith Charles
+ORG:Authors, Inc.
+TITLE:Public relations account executive
+TEL;WORK;VOICE:(663)622-3446x041
+ADR;WORK:;;100 Flat Grape Dr.;Fresno;CA;95555;United States of America
+EMAIL;PREF;INTERNET:charl.smith@fernandez.com
+REV:20150922T195243Z
+END:VCARD

@@ -1,0 +1,10 @@
+BEGIN:VCARD
+VERSION:2.1
+FN:Warner Danny
+ORG:Authors, Inc.
+TITLE:Bookseller
+TEL;WORK;VOICE:+1-873-716-1939x521
+ADR;WORK:;;100 Flat Grape Dr.;Fresno;CA;95555;United States of America
+EMAIL;PREF;INTERNET:danny.warne@kramer-ford.info
+REV:20150922T195243Z
+END:VCARD

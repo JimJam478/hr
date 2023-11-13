@@ -1,0 +1,10 @@
+BEGIN:VCARD
+VERSION:2.1
+FN:Fields Tara
+ORG:Authors, Inc.
+TITLE:Operational researcher
+TEL;WORK;VOICE:693.830.7806
+ADR;WORK:;;100 Flat Grape Dr.;Fresno;CA;95555;United States of America
+EMAIL;PREF;INTERNET:tara.field@beasley.com
+REV:20150922T195243Z
+END:VCARD

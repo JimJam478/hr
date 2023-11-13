@@ -1,0 +1,10 @@
+BEGIN:VCARD
+VERSION:2.1
+FN:Stokes Kyle
+ORG:Authors, Inc.
+TITLE:Commercial art gallery manager
+TEL;WORK;VOICE:(313)772-4215x4586
+ADR;WORK:;;100 Flat Grape Dr.;Fresno;CA;95555;United States of America
+EMAIL;PREF;INTERNET:kyle.stoke@greene.com
+REV:20150922T195243Z
+END:VCARD

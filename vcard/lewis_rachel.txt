@@ -1,0 +1,10 @@
+BEGIN:VCARD
+VERSION:2.1
+FN:Lewis Rachel
+ORG:Authors, Inc.
+TITLE:Armed forces logistics/support/administrative officer
+TEL;WORK;VOICE:+1-663-842-9415x1768
+ADR;WORK:;;100 Flat Grape Dr.;Fresno;CA;95555;United States of America
+EMAIL;PREF;INTERNET:rache.lewis@coleman-wright.com
+REV:20150922T195243Z
+END:VCARD

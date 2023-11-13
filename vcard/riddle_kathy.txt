@@ -1,0 +1,10 @@
+BEGIN:VCARD
+VERSION:2.1
+FN:Riddle Kathy
+ORG:Authors, Inc.
+TITLE:Veterinary surgeon
+TEL;WORK;VOICE:(516)724-0126
+ADR;WORK:;;100 Flat Grape Dr.;Fresno;CA;95555;United States of America
+EMAIL;PREF;INTERNET:kathy.riddl@berg-davis.net
+REV:20150922T195243Z
+END:VCARD

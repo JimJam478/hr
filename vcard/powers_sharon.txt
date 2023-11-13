@@ -1,0 +1,10 @@
+BEGIN:VCARD
+VERSION:2.1
+FN:Powers Sharon
+ORG:Authors, Inc.
+TITLE:Corporate treasurer
+TEL;WORK;VOICE:(964)412-1296x1024
+ADR;WORK:;;100 Flat Grape Dr.;Fresno;CA;95555;United States of America
+EMAIL;PREF;INTERNET:sharo.power@contreras-wilson.com
+REV:20150922T195243Z
+END:VCARD

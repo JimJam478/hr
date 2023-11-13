@@ -1,0 +1,10 @@
+BEGIN:VCARD
+VERSION:2.1
+FN:Richardson Kevin
+ORG:Authors, Inc.
+TITLE:Actuary
+TEL;WORK;VOICE:665.854.0141
+ADR;WORK:;;100 Flat Grape Dr.;Fresno;CA;95555;United States of America
+EMAIL;PREF;INTERNET:kevin.richa@adams-williamson.com
+REV:20150922T195243Z
+END:VCARD

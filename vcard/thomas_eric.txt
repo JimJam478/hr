@@ -1,0 +1,10 @@
+BEGIN:VCARD
+VERSION:2.1
+FN:Thomas Eric
+ORG:Authors, Inc.
+TITLE:Ambulance person
+TEL;WORK;VOICE:+1-458-299-8896x7804
+ADR;WORK:;;100 Flat Grape Dr.;Fresno;CA;95555;United States of America
+EMAIL;PREF;INTERNET:eric.thoma@weeks-young.com
+REV:20150922T195243Z
+END:VCARD

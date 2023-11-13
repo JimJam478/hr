@@ -1,0 +1,10 @@
+BEGIN:VCARD
+VERSION:2.1
+FN:Nelson Brian
+ORG:Authors, Inc.
+TITLE:Retail manager
+TEL;WORK;VOICE:3144490453
+ADR;WORK:;;100 Flat Grape Dr.;Fresno;CA;95555;United States of America
+EMAIL;PREF;INTERNET:brian.nelso@patton-marsh.org
+REV:20150922T195243Z
+END:VCARD

@@ -1,0 +1,10 @@
+BEGIN:VCARD
+VERSION:2.1
+FN:Marshall Elizabeth
+ORG:Authors, Inc.
+TITLE:Nurse, mental health
+TEL;WORK;VOICE:712.901.8326
+ADR;WORK:;;100 Flat Grape Dr.;Fresno;CA;95555;United States of America
+EMAIL;PREF;INTERNET:eliza.marsh@diaz.org
+REV:20150922T195243Z
+END:VCARD

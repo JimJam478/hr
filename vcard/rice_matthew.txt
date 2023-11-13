@@ -1,0 +1,10 @@
+BEGIN:VCARD
+VERSION:2.1
+FN:Rice Matthew
+ORG:Authors, Inc.
+TITLE:Licensed conveyancer
+TEL;WORK;VOICE:878.862.2388x182
+ADR;WORK:;;100 Flat Grape Dr.;Fresno;CA;95555;United States of America
+EMAIL;PREF;INTERNET:matth.rice@abbott-armstrong.com
+REV:20150922T195243Z
+END:VCARD

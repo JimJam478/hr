@@ -1,0 +1,10 @@
+BEGIN:VCARD
+VERSION:2.1
+FN:Williamson Gina
+ORG:Authors, Inc.
+TITLE:Tree surgeon
+TEL;WORK;VOICE:9485097596
+ADR;WORK:;;100 Flat Grape Dr.;Fresno;CA;95555;United States of America
+EMAIL;PREF;INTERNET:gina.willi@nash.com
+REV:20150922T195243Z
+END:VCARD

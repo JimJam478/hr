@@ -1,0 +1,10 @@
+BEGIN:VCARD
+VERSION:2.1
+FN:Powell Elaine
+ORG:Authors, Inc.
+TITLE:Corporate treasurer
+TEL;WORK;VOICE:813.893.1469
+ADR;WORK:;;100 Flat Grape Dr.;Fresno;CA;95555;United States of America
+EMAIL;PREF;INTERNET:elain.powel@preston-bridges.com
+REV:20150922T195243Z
+END:VCARD

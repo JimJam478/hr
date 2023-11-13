@@ -1,0 +1,10 @@
+BEGIN:VCARD
+VERSION:2.1
+FN:Hayes Stephanie
+ORG:Authors, Inc.
+TITLE:Scientist, forensic
+TEL;WORK;VOICE:001-545-414-0342x32828
+ADR;WORK:;;100 Flat Grape Dr.;Fresno;CA;95555;United States of America
+EMAIL;PREF;INTERNET:steph.hayes@miller.biz
+REV:20150922T195243Z
+END:VCARD

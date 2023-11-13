@@ -1,0 +1,10 @@
+BEGIN:VCARD
+VERSION:2.1
+FN:Douglas Joe
+ORG:Authors, Inc.
+TITLE:Camera operator
+TEL;WORK;VOICE:(302)521-8472x709
+ADR;WORK:;;100 Flat Grape Dr.;Fresno;CA;95555;United States of America
+EMAIL;PREF;INTERNET:joe.dougl@murphy.com
+REV:20150922T195243Z
+END:VCARD

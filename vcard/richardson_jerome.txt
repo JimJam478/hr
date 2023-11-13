@@ -1,0 +1,10 @@
+BEGIN:VCARD
+VERSION:2.1
+FN:Richardson Jerome
+ORG:Authors, Inc.
+TITLE:Scientist, research (physical sciences)
+TEL;WORK;VOICE:001-661-623-9666x1037
+ADR;WORK:;;100 Flat Grape Dr.;Fresno;CA;95555;United States of America
+EMAIL;PREF;INTERNET:jerom.richa@rollins.com
+REV:20150922T195243Z
+END:VCARD

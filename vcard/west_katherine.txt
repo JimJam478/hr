@@ -1,0 +1,10 @@
+BEGIN:VCARD
+VERSION:2.1
+FN:West Katherine
+ORG:Authors, Inc.
+TITLE:Health physicist
+TEL;WORK;VOICE:358-473-5289
+ADR;WORK:;;100 Flat Grape Dr.;Fresno;CA;95555;United States of America
+EMAIL;PREF;INTERNET:kathe.west@smith.com
+REV:20150922T195243Z
+END:VCARD
