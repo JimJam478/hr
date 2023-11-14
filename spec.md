@@ -26,16 +26,27 @@ If the csv file contains the following employee details:
 	
 Files named 'alice_bob.vcf' and 'alice_bob.qr.png' will be generated.
 The file will contain the following:
+
 BEGIN:VCARD
+
 VERSION:2.1
+
 N:Alice;Bob
+
 FN:Bob Alice
+
 ORG:Authors, Inc.
+
 TITLE:Software Engineer
+
 TEL;WORK;VOICE:555-555-5555
+
 ADR;WORK:;;100 Flat Grape Dr.;Fresno;CA;95555;United States of America
+
 EMAIL;PREF;INTERNET:alice@example.com
+
 REV:20150922T195243Z
+
 END:VCARD
 	
 
