@@ -30,18 +30,18 @@ END:VCARD
 """)
         
 def generate_qr_codes(data):
-   for item in data:
-       qr_code = requests.get(f"https://chart.googleapis.com/chart?cht=qr&chs=500x500&chl={item}")
-       with open(f"vcards/{item[0].lower()}_{item[1].lower()}.qr.png", "wb") as f:
-          f.write(qr_code.content)
+  for item in data:
+    qr_code = requests.get(f"https://chart.googleapis.com/chart?cht=qr&chs=500x500&chl={item}")
+    with open(f"vcards/{item[0].lower()}_{item[1].lower()}.qr.png", "wb") as f:
+      f.write(qr_code.content)
         
 def main():
-    if not os.path.exists('/vcard'):
-       os.mkdir('vcards')
-       file = sys.argv[1]
-       data = get_data(file)
-       generate_vcs(data)
-       generate_qr_codes(data)
-
+  if not os.path.exists('/vcard'):
+    os.mkdir('vcards')
+    file = sys.argv[1]
+    data = get_data(file)
+    generate_vcs(data)
+    generate_qr_codes(data)
+    
 if __name__ == "__main__":
   main()    
