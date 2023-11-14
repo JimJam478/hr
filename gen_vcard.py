@@ -1,7 +1,8 @@
 import csv
 import os
-import sys
 import requests
+import sys
+
 
 def get_data(file_csv):
   data = []
