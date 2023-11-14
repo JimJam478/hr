@@ -1,0 +1,12 @@
+
+BEGIN:VCARD
+VERSION:2.1
+N:Jones;Daniel
+FN:Daniel Jones
+ORG:Authors, Inc.
+TITLE:Therapist, speech and language
+TEL;WORK;VOICE:+1-287-706-1795x151
+ADR;WORK:;;100 Flat Grape Dr.;Fresno;CA;95555;United States of America
+EMAIL;PREF;INTERNET:danie.jones@cortez.biz
+REV:20150922T195243Z
+END:VCARD

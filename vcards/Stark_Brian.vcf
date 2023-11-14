@@ -1,0 +1,12 @@
+
+BEGIN:VCARD
+VERSION:2.1
+N:Stark;Brian
+FN:Brian Stark
+ORG:Authors, Inc.
+TITLE:Producer, radio
+TEL;WORK;VOICE:+1-795-714-4606x92461
+ADR;WORK:;;100 Flat Grape Dr.;Fresno;CA;95555;United States of America
+EMAIL;PREF;INTERNET:brian.stark@bowman.com
+REV:20150922T195243Z
+END:VCARD

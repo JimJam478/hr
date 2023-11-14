@@ -3,7 +3,7 @@ import os
 import sys
 import requests
 
-def details_from_csv(file_csv):
+def get_data(file_csv):
   data = []
   with open(file_csv,'r') as f:
     reader = csv.reader(f)
@@ -13,7 +13,7 @@ def details_from_csv(file_csv):
 
 def generate_vcs(data):
   for item in data:
-    with open(f'vcards/{item[0]}_{item[1]}.vcf','w') as f:
+    with open(f'vcards/{item[0].lower()}_{item[1].lower()}.vcf','w') as f:
         f.write(f"""
 BEGIN:VCARD
 VERSION:2.1

@@ -1,0 +1,12 @@
+
+BEGIN:VCARD
+VERSION:2.1
+N:Gomez;Kevin
+FN:Kevin Gomez
+ORG:Authors, Inc.
+TITLE:Archivist
+TEL;WORK;VOICE:377-374-5898
+ADR;WORK:;;100 Flat Grape Dr.;Fresno;CA;95555;United States of America
+EMAIL;PREF;INTERNET:kevin.gomez@ward-hunt.com
+REV:20150922T195243Z
+END:VCARD

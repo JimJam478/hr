@@ -1,0 +1,12 @@
+
+BEGIN:VCARD
+VERSION:2.1
+N:Armstrong;Brian
+FN:Brian Armstrong
+ORG:Authors, Inc.
+TITLE:Holiday representative
+TEL;WORK;VOICE:(263)293-8345x5772
+ADR;WORK:;;100 Flat Grape Dr.;Fresno;CA;95555;United States of America
+EMAIL;PREF;INTERNET:brian.armst@richardson.com
+REV:20150922T195243Z
+END:VCARD

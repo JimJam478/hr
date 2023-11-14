@@ -1,21 +1,31 @@
 import gen_vcard
 import os
 
-def test_generate_vcard():
-        with open('test.csv', 'w') as f:
-            f.write('Alice,Bob,Software Engineer,alice@example.com,555-555-5555')
-        gen_vcard.generate_vcard('test.csv')
-        with open('vcard/alice_bob.txt', 'r') as f:
-            vcard = f.read()
+def test_get_data():
+    test = "/tmp/sample"
+    with open(test, 'w') as f:
+        f.write('Alice,Bob,Software Engineer,alice@example.com,555-555-5555')
+    data = gen_vcard.get_data(test)
+    assert data == [['Alice','Bob','Software Engineer','alice@example.com','555-555-5555']]
+    os.unlink(test)
 
-        assert os.path.exists('vcard/alice_bob.txt')
-        assert f"""BEGIN:VCARD
+def test_generate_vcs():
+    data = [['Alice','Bob','Software Engineer','alice@example.com','555-555-5555']]
+    gen_vcard.generate_vcs(data)
+    with open('vcards/alice_bob.vcf', 'r') as f:
+        vcard = f.read()
+    assert os.path.exists('vcards/alice_bob.vcf')
+    assert f"""
+BEGIN:VCARD
 VERSION:2.1
-FN:Alice Bob
+N:Alice;Bob
+FN:Bob Alice
 ORG:Authors, Inc.
 TITLE:Software Engineer
 TEL;WORK;VOICE:555-555-5555
 ADR;WORK:;;100 Flat Grape Dr.;Fresno;CA;95555;United States of America
 EMAIL;PREF;INTERNET:alice@example.com
 REV:20150922T195243Z
-END:VCARD""" in vcard
+END:VCARD
+""" in vcard
+    os.unlink('vcards/alice_bob.vcf')

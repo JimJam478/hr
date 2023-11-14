@@ -1,0 +1,12 @@
+
+BEGIN:VCARD
+VERSION:2.1
+N:Simpson;Dana
+FN:Dana Simpson
+ORG:Authors, Inc.
+TITLE:Multimedia specialist
+TEL;WORK;VOICE:001-898-787-7352x563
+ADR;WORK:;;100 Flat Grape Dr.;Fresno;CA;95555;United States of America
+EMAIL;PREF;INTERNET:dana.simps@thompson.com
+REV:20150922T195243Z
+END:VCARD
