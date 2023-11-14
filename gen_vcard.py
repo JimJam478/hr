@@ -39,7 +39,7 @@ def main():
     if not os.path.exists('/vcard'):
        os.mkdir('vcards')
        file = sys.argv[1]
-       data = details_from_csv(file)
+       data = get_data(file)
        generate_vcs(data)
        generate_qr_codes(data)
 
