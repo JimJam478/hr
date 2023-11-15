@@ -38,15 +38,17 @@ Eg: Typing in:
 
 	python3 gen_vcard.py <csv file> -h 
 
-Shows a help message and also detail the various other options that are available.
+Shows a help message and details various other options that are available.
 
 	python3 gen_vcard.py <csv file> -n15
 
-Adds first 15 employees Vcards and QR codes into 'vcards' directory.\
+Creates the first 15 employees' Vcards and QR codes into 'vcards' directory.\
+Entering the script without the number options, generates Vcards and Qr codes for all the employee details in the csv file. 
+
 Several options can be witten in a same script for added functionality.\
 Eg:
 
-	python3 gen_vcard.py details.csv -n15 -vc
+	python3 gen_vcard.py <csv file> -n15 -vc
 
 Generates Vcards for the first 15 employees in the csv file.
  
