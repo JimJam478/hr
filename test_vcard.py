@@ -1,7 +1,6 @@
 import gen_vcard
 import os
 
-
 def test_get_data():
     test = "/tmp/sample"
     with open(test, 'w') as f:
@@ -32,4 +31,12 @@ REV:20150922T195243Z
 END:VCARD
 """ in vcard
     os.unlink('vcards/alice_bob.vcf')
+
+def test_generate_qr():
+    if not os.path.exists('vcards'):
+        os.mkdir('vcards')
+    data = [['Alice','Bob','Software Engineer','alice@example.com','555-555-5555']]
+    gen_vcard.generate_qr_codes(data)
+    assert os.path.exists('vcards/alice_bob.qr.png')
+    
     
