@@ -14,12 +14,42 @@ Eg: 'Alice','Bob','Software Engineer','alice@example.com','555-555-5555'
 
 The next employee's detail must be written in the next row/line in the csv file.
 	
-	Script: python3 gen_vcards.py <csv_file>
+	Script: python3 gen_vcards.py <csv file>
 
 Once the script is entered, each row in the csv file is parsed and a Vcard, QR code is generated for each employee.\
 Each Vcard file will be of the format: lastname_firstname.vcf\
 Each Qr file will be of the format: lastname_firstname.qr.png
 
+Some functionalities are available in the form of options in the programme.\
+
+	script: python3 gen_vcard.py <csv file> <option>
+
+Options are to be prefixed with a '-' symbol.\
+Options include:
+
+	-h, --help                  show a help message and exit
+	-v, --verbose               Print detailed logging
+	-i, --concise               Print concise logging
+	-n NUMBER, --number NUMBER  Number of vcards/qr codes to generate
+	-vc, --vcard                Generates only Vcards
+	-qr, --qrcode               Generates only QR codes
+
+Eg: Typing in:
+
+	python3 gen_vcard.py <csv file> -h 
+
+Shows a help message and also detail the various other options that are available.
+
+	python3 gen_vcard.py <csv file> -n15
+
+Adds first 15 employees Vcards and QR codes into 'vcards' directory.\
+Several options can be witten in a same script for added functionality.\
+Eg:
+
+	python3 gen_vcard.py details.csv -n15 -vc
+
+Generates Vcards for the first 15 employees in the csv file.
+ 
 ### Output:
 
 A new directory called 'vcards' will be created.\

@@ -12213,3 +12213,19 @@
 [DEBUG] 2023-11-15 16:49:19,490 | gen_vcard.py:82 | 99. Generated Martinez_Jared.qr.png
 [DEBUG] 2023-11-15 16:49:19,701 | gen_vcard.py:82 | 100. Generated Howard_Paige.qr.png
 [INFO] 2023-11-15 16:49:19,702 | gen_vcard.py:83 | QR Generation success !
+[DEBUG] 2023-11-15 20:40:21,002 | gen_vcard.py:72 | 1. Generated Gonzalez_Lori.vcf
+[DEBUG] 2023-11-15 20:40:21,048 | gen_vcard.py:72 | 2. Generated Brown_Natasha.vcf
+[DEBUG] 2023-11-15 20:40:21,048 | gen_vcard.py:72 | 3. Generated Hayes_Stephanie.vcf
+[DEBUG] 2023-11-15 20:40:21,049 | gen_vcard.py:72 | 4. Generated Fisher_Dorothy.vcf
+[DEBUG] 2023-11-15 20:40:21,049 | gen_vcard.py:72 | 5. Generated Carson_Ronald.vcf
+[DEBUG] 2023-11-15 20:40:21,049 | gen_vcard.py:72 | 6. Generated Fisher_Eric.vcf
+[DEBUG] 2023-11-15 20:40:21,049 | gen_vcard.py:72 | 7. Generated Mcfarland_Laura.vcf
+[DEBUG] 2023-11-15 20:40:21,050 | gen_vcard.py:72 | 8. Generated Velazquez_Sara.vcf
+[DEBUG] 2023-11-15 20:40:21,050 | gen_vcard.py:72 | 9. Generated Wilson_Michael.vcf
+[DEBUG] 2023-11-15 20:40:21,050 | gen_vcard.py:72 | 10. Generated Lewis_Amy.vcf
+[DEBUG] 2023-11-15 20:40:21,051 | gen_vcard.py:72 | 11. Generated Peterson_Roy.vcf
+[DEBUG] 2023-11-15 20:40:21,051 | gen_vcard.py:72 | 12. Generated Chavez_Andrew.vcf
+[DEBUG] 2023-11-15 20:40:21,051 | gen_vcard.py:72 | 13. Generated Dodson_Kenneth.vcf
+[DEBUG] 2023-11-15 20:40:21,051 | gen_vcard.py:72 | 14. Generated Hood_Jeremy.vcf
+[DEBUG] 2023-11-15 20:40:21,052 | gen_vcard.py:72 | 15. Generated Chambers_Michelle.vcf
+[INFO] 2023-11-15 20:40:21,052 | gen_vcard.py:73 | Vcard Generation success !
