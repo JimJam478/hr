@@ -1,2 +1,4 @@
 __pycache__/
-requirements.txt
+requirements.txt/
+.coverage/
+run.log/
