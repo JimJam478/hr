@@ -30,7 +30,7 @@ def parse_args():
   parser.add_argument("ipfile", help="Name of input csv file containing employee details")
   parser.add_argument("-v", "--verbose", help="Print detailed logging", action='store_true', default=False)
   parser.add_argument("-i", "--concise", help="Print concise logging", action='store_true', default=False)
-  parser.add_argument("-n", "--number", help="Number of vcards/qr code to generate", action='store', type=int,default = 100)
+  parser.add_argument("-n", "--number", help="Number of vcards/qr code to generate", action='store', type=int,default = 10)
   parser.add_argument("-vc", "--vcard", help="Generates only Vcards", action='store_true', default=False)
   parser.add_argument("-qr", "--qrcode", help="Generates only QR codes", action='store_true', default=False)
   args = parser.parse_args()
@@ -51,23 +51,27 @@ def setup_logging(log_level):
   logger.addHandler(handler)
   logger.addHandler(fhandler)
 
+def generate_vcard_content(data):
+  l_name,f_name,designation,email,phone = data
+  return f"""
+  BEGIN:VCARD
+  VERSION:2.1
+  N:{l_name};{f_name}
+  FN:{f_name} {l_name}
+  ORG:Authors, Inc.
+  TITLE:{designation}
+  TEL;WORK;VOICE:{phone}
+  ADR;WORK:;;100 Flat Grape Dr.;Fresno;CA;95555;United States of America
+  EMAIL;PREF;INTERNET:{email}
+  REV:20150922T195243Z
+  END:VCARD
+  """
+
 def generate_vcs(data):
   i = 0
   for item in data:
     with open(f'vcards/{item[0].lower()}_{item[1].lower()}.vcf','w') as f:
-      f.write(f"""
-  BEGIN:VCARD
-  VERSION:2.1
-  N:{item[0]};{item[1]}
-  FN:{item[1]} {item[0]}
-  ORG:Authors, Inc.
-  TITLE:{item[2]}
-  TEL;WORK;VOICE:{item[4]}
-  ADR;WORK:;;100 Flat Grape Dr.;Fresno;CA;95555;United States of America
-  EMAIL;PREF;INTERNET:{item[3]}
-  REV:20150922T195243Z
-  END:VCARD
-  """)
+      f.write(generate_vcard_content(item))
     i+=1
     logger.debug("%d. Generated %s_%s.vcf",i,item[0],item[1])
   logger.info("Vcard Generation success !")
