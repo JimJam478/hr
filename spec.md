@@ -43,7 +43,7 @@ Shows a help message and details various other options that are available.
 	python3 gen_vcard.py <csv file> -n15
 
 Creates the first 15 employees' Vcards and QR codes into 'vcards' directory.\
-Entering the script without the number options, generates Vcards and Qr codes for all the employee details in the csv file. 
+Note: Entering the script without the number option, generates Vcards and Qr codes for 10 employee details in the csv file. 
 
 Several options can be witten in a same script for added functionality.\
 Eg:
