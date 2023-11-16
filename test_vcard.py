@@ -1,6 +1,6 @@
 import gen_vcard
 import os
-import logging
+
 
 def test_get_data():
     test = "/tmp/sample"

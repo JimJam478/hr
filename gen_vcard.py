@@ -2,7 +2,6 @@ import argparse
 import csv
 import os
 import requests
-import sys
 import logging
 
 def get_data(file_csv,number):
@@ -14,14 +13,6 @@ def get_data(file_csv,number):
       if row_count >= number:
         break
       row_count += 1
-      data.append(item)
-  return data
-
-def get_data_full(file_csv):
-  data = []
-  with open(file_csv,'r') as f:
-    reader = csv.reader(f)
-    for item in reader:
       data.append(item)
   return data
 
@@ -98,10 +89,7 @@ def main():
     os.mkdir('vcards')
   file = args.ipfile
   number = args.number
-  if not number:
-    data = get_data_full(file)
-  else:
-    data = get_data(file,number)
+  data = get_data(file,number)
   vcard = args.vcard
   qrcode = args.qrcode
   if vcard:
