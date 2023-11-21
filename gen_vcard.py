@@ -4,8 +4,48 @@ import logging
 import os
 import psycopg2
 from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
+from psycopg2.extensions import AsIs
 import psycopg2.sql as sql
 import requests
+
+def parse_args():
+  parser = argparse.ArgumentParser(prog="gen_vcard.py", description="Generates employee Vcard and QR codes from a csv file")
+  
+  subparser = parser.add_subparsers(dest='subcommand',help='sub command help')
+  parser_db = subparser.add_parser("db",help="database commands")
+  parser_db.add_argument("-i","--initdb",help="Initialize database",action='store_true')
+  parser_db.add_argument("--createtb", help="Create a table in database", action='store_true')
+  parser_db.add_argument("--deltb", help="Delete specific table in database", action='store', type=str)
+  parser_db.add_argument("-d","--deldb",help="delete database",action='store', type=str)
+
+  parser_load = subparser.add_parser("load",help="load file commands")
+  parser_load.add_argument("-f","--file",help="csv file name",action="store",type=str)
+  parser_load.add_argument("-n", "--number", help="Number of vcards/qr code to generate", action='store', type=int)
+  parser_load.add_argument("-l","--loadleave",help="load data into leave table",action="store_true",default=False)
+
+  parser_generate = subparser.add_parser("generate",help="generate commands")
+  parser_generate.add_argument("-q","--qrcode",help="Generate qr codes",action="store_true",default=False)
+  parser_generate.add_argument("-s", "--size", help="Size of qr codes", action='store', type=int, default=500)
+  parser_generate.add_argument("-e", "--empleave", help="Leaves taken by the perticular employee", action='store', type=int)
+  parser.add_argument("-v", "--verbose", help="Print detailed logging", action='store_true', default=False)
+  parser.add_argument("-c", "--concise", help="Print concise logging", action='store_true', default=False)
+  args = parser.parse_args()
+  return args
+
+logger = None
+
+def setup_logging(log_level):
+  global logger
+  logger = logging.getLogger("gen_vcard")
+  handler = logging.StreamHandler()
+  fhandler = logging.FileHandler("run.log")
+  fhandler.setLevel(logging.DEBUG)
+  handler.setLevel(log_level)
+  handler.setFormatter(logging.Formatter("[%(levelname)s] %(asctime)s | %(filename)s:%(lineno)d | %(message)s"))
+  fhandler.setFormatter(logging.Formatter("[%(levelname)s] %(asctime)s | %(filename)s:%(lineno)d | %(message)s"))
+  logger.setLevel(logging.DEBUG)
+  logger.addHandler(handler)
+  logger.addHandler(fhandler)
 
 def get_data(file_csv,number):
   data = []
@@ -28,12 +68,21 @@ def get_data_full(file_csv):
   return data
 
 def create_database():
-  conn = psycopg2.connect(dbname="postgres", user='allen')
-  conn.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
+  conn = psycopg2.connect(database="postgres", user='allen')
   cursor = conn.cursor()
-  sql = "create database company"
-  cursor.execute(sql)
-  print('database created succesfully')
+  cursor.execute("commit")
+  cursor.execute("create database company")
+  logger.info('Database company created succesfully')
+  cursor.close()
+  conn.close()
+
+def delete_database(name):
+  conn = psycopg2.connect(database="postgres", user='allen')
+  cursor = conn.cursor()
+  cursor.execute("commit")
+  cursor.execute("drop database %s",(AsIs(name),))
+  logger.info("database %s deleted succesfully",name)
+  cursor.close()
   conn.close()
 
 def create_table():
@@ -47,7 +96,7 @@ designation VARCHAR(80),
 email VARCHAR(80),
 phone_number VARCHAR(80) 
 );''')   
-  print("Table has been created successfully!!")
+  logger.info("Employee table created successfully!!")
   conn.commit()
   conn.close()
 
@@ -55,20 +104,20 @@ def create_additonal_table(query):
   conn = psycopg2.connect(dbname="company", user="allen")
   cursor = conn.cursor()
   cursor.execute(query)
-  print("Table has been created successfully!!")
+  logger.info("Employee_leave table created succesfully!")
   conn.commit()
   conn.close()
 
 def delete_table(table):
   conn = psycopg2.connect(dbname="company", user="allen")
   cursor = conn.cursor()
-  cursor.execute(f"Drop table {table}")
-  print("Table has been deleted successfully!!")
+  cursor.execute("Drop table %s",AsIs(table,))
+  logger.info("%s deleted successfully!!",table)
   conn.commit()
   conn.close()
 
 def truncate_table():
-  conn = psycopg2.connect("dbname=company user='allen'")
+  conn = psycopg2.connect(dbname="company",user="allen")
   cursor = conn.cursor()
   truncate_table = "TRUNCATE TABLE employees RESTART IDENTITY"
   cursor.execute(truncate_table)
@@ -82,19 +131,41 @@ def update_table(data):
   for item in data:
     cursor.execute("INSERT INTO employees (last_name, first_name, designation, email, phone_number) VALUES (%s,%s,%s,%s,%s)",(item[0], item[1], item[2], item[3], item[4]))
     conn.commit()
-  print('Table updated succesfully')
+  logger.info('Table employees updated succesfully')
   cursor.close()
   conn.close()
 
-def join_leave_table(query,id):
+def load_leave_table():
+  conn = psycopg2.connect(dbname="company", user="allen")
+  cursor = conn.cursor()
+  query = open('leaves.sql','r')
+  cursor.execute(query.read())
+  logger.info('Leave table loaded succesfully')
+  conn.commit()
+  cursor.close()
+  conn.close()
+
+def join_leave_table(id):
   query = f'''select count(el.employee_id),e.first_name,e.last_name ,e.id 
   from employees e join employee_leave el on e.id = el.employee_id 
   where e.id={id} group by e.id,e.first_name,el.employee_id;'''
   conn = psycopg2.connect(dbname="company", user="allen")
   cursor = conn.cursor()
-  cursor.fetchall(query)
+  cursor.execute(query)
+  data = cursor.fetchall()
   cursor.close()
   conn.close()
+  return data
+
+def get_leave_data(data):
+  for item in data:
+    count, f_name, l_name, e_id = item
+  leaves_left = 5 - count
+  return f'''Employee Name: {f_name} {l_name}
+Employee Id: {e_id}
+Max leaves: 5
+Leaves left: {leaves_left}
+'''
 
 def get_table_data(start, end):
     offset = start-1
@@ -108,35 +179,6 @@ def get_table_data(start, end):
     cur.close()
     conn.close()
     return data
-
-def parse_args():
-  parser = argparse.ArgumentParser(prog="gen_vcard.py", description="Generates employee Vcard and QR codes from a csv file")
-  parser.add_argument("command", choices = ['initdb','load','generate'],nargs="?",default="generate" ,help="Initialize,load database and generate vcards")
-  parser.add_argument("-f","--file", action='store', type = str)
-  parser.add_argument("-v", "--verbose", help="Print detailed logging", action='store_true', default=False)
-  parser.add_argument("-i", "--concise", help="Print concise logging", action='store_true', default=False)
-  parser.add_argument("-n", "--number", help="Number of vcards/qr code to generate", action='store', type=int)
-  parser.add_argument("--createtb", help="Create a table in database", action='store_true')
-  parser.add_argument("--deltb", help="Delete specific table in database", action='store', type=str)
-  parser.add_argument("-s", "--size", help="Size of qr codes", action='store', type=int,default = 500)
-  parser.add_argument("-q", "--qrcode", help="Generates only QR codes", action='store_true', default=False)
-  args = parser.parse_args()
-  return args
-
-logger = None
-
-def setup_logging(log_level):
-  global logger
-  logger = logging.getLogger("gen_vcard")
-  handler = logging.StreamHandler()
-  fhandler = logging.FileHandler("run.log")
-  fhandler.setLevel(logging.DEBUG)
-  handler.setLevel(log_level)
-  handler.setFormatter(logging.Formatter("[%(levelname)s] %(asctime)s | %(filename)s:%(lineno)d | %(message)s"))
-  fhandler.setFormatter(logging.Formatter("[%(levelname)s] %(asctime)s | %(filename)s:%(lineno)d | %(message)s"))
-  logger.setLevel(logging.DEBUG)
-  logger.addHandler(handler)
-  logger.addHandler(fhandler)
 
 def generate_vcard_content(l_name,f_name,designation,email,phone):
   return f"""
@@ -187,11 +229,33 @@ def main():
   if not os.path.exists('vcards'):
     os.mkdir('vcards')
   
-  if args.command == 'initdb':
-    create_database()
-    create_table()
+  if args.subcommand == 'db':
+    name = args.initdb
+    if name == True:
+      create_database()
+      create_table()
+
+    create_tb = args.createtb
+    del_tb = args.deltb
+
+    if create_tb == True:
+      query = '''create table if not exists employee_leave (
+id serial,
+leave_date date,
+reason varchar(80),
+employee_id integer references employees(id), 
+PRIMARY KEY (employee_id,leave_date)
+)'''
+      create_additonal_table(query)
   
-  if args.command == 'load':
+    if del_tb != None:
+      delete_table(del_tb)
+    
+    del_db = args.deldb
+    if del_db != None:
+      delete_database(del_db)
+  
+  if args.subcommand == 'load':
     number = args.number
     if args.file:
       if number == None:
@@ -200,31 +264,25 @@ def main():
         data = get_data(args.file,number)
       update_table(data)
 
-  ctable = args.createtb
-  dtable = args.deltb
-  if ctable == True:
-    query = '''create table if not exists employee_leave (
-id serial,
-leave_date date,
-reason varchar(80),
-employee_id integer references employees(id), 
-PRIMARY KEY (employee_id,leave_date)
-)'''
-    create_additonal_table(query)
-  if dtable != None:
-    delete_table(dtable)
- 
-  if args.command == 'generate':
-    data_from_db = list(get_table_data(1, 99999))
+    if args.loadleave:
+      load_leave_table()
+    
+  if args.subcommand == 'generate':
+    data_from_db = list(get_table_data(1, 999999))
     qrcode = args.qrcode
     size = args.size
 
-    if qrcode:
+    if qrcode==True:
       generate_qr_codes(data_from_db,size)
       generate_vcs(data_from_db)
-    if not qrcode: 
+    else: 
       generate_vcs(data_from_db)
     
+    e_id = args.empleave
+    if e_id != None:
+      data = join_leave_table(e_id)
+      print(get_leave_data(data))
+
 if __name__ == "__main__":
   main()    
 
