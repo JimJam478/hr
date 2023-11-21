@@ -31,8 +31,9 @@ Options include:
 	-v, --verbose               Print detailed logging
 	-i, --concise               Print concise logging
 	-n NUMBER, --number NUMBER  Number of vcards/qr codes to generate
-	-vc, --vcard                Generates only Vcards
-	-qr, --qrcode               Generates only QR codes
+	-s SIZE, --size SIZE 		Size of qr codes
+  	-q, --qrcode          		Generates only QR codes
+
 
 Eg: Typing in:
 
