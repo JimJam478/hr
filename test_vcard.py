@@ -13,7 +13,8 @@ def test_get_data():
 
 def test_generate_vcs():
     data = ['Alice','Bob','Software Engineer','alice@example.com','555-555-5555']
-    gen_vcard.generate_vcard_content(data)
+    l_name,f_name,designation,email,phone = data
+    gen_vcard.generate_vcard_content(l_name,f_name,designation,email,phone)
     assert f"""
 BEGIN:VCARD
 VERSION:2.1
