@@ -230,8 +230,8 @@ def main():
     os.mkdir('vcards')
   
   if args.subcommand == 'db':
-    name = args.initdb
-    if name == True:
+    db_name = args.initdb
+    if db_name == True:
       create_database()
       create_table()
 
@@ -240,11 +240,11 @@ def main():
 
     if create_tb == True:
       query = '''create table if not exists employee_leave (
-id serial,
+id serial primary key,
 leave_date date,
 reason varchar(80),
 employee_id integer references employees(id), 
-PRIMARY KEY (employee_id,leave_date)
+unique (employee_id,leave_date)
 )'''
       create_additonal_table(query)
   
