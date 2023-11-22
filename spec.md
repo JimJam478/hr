@@ -20,39 +20,73 @@ Once the script is entered, each row in the csv file is parsed and a Vcard, QR c
 Each Vcard file will be of the format: lastname_firstname.vcf\
 Each Qr file will be of the format: lastname_firstname.qr.png
 
-Some functionalities are available in the form of options in the programme.\
+Some functionalities are available in the form of options and subcommands in the programme.\
 
-	script: python3 gen_vcard.py <csv file> <option>
+	script: python3 gen_vcard.py <csv file> <option> <subcommand> <subcommand option>
 
-Options are to be prefixed with a '-' symbol.\
-Options include:
+Options are prefixed with a '-' symbol.\
+Entering python3 gen_vcard.py -h, gives the following output:
 
-	-h, --help                  show a help message and exit
-	-v, --verbose               Print detailed logging
-	-i, --concise               Print concise logging
-	-n NUMBER, --number NUMBER  Number of vcards/qr codes to generate
-	-s SIZE, --size SIZE 		Size of qr codes
-  	-q, --qrcode          		Generates only QR codes
+	positional arguments:
+	{db,load,generate}  sub command help
+		db                database commands
+		load              load file commands
+		generate          generate commands
+
+	options:
+	-h, --help          show this help message and exit
+	-v, --verbose       Print detailed logging
+	-c, --concise       Print concise logging
+
+Each subcommand has its own help command, if -h is used in the script after the subcommand.\
+
+Eg: python3 gen_vcard db -h, gives the following output:
+
+	options:
+	-h, --help              show this help message and exit
+	-i, --initdb            Initialize database
+	--createtb              Create a table in database
+	--deltb DELTB           Delete specific table in database
+	-d DELDB, --deldb DELDB Delete database
+
+#### For generating Vcards, the following commands have to be entered:\
+1) Initialize database
+
+	script: python3 gen_vcard db -i
+	(This script creates a company database and an employees table)
+
+2) Load data
+
+		script: python3 gen_vcard load -f <csv_file>
+
+3) Generate vcards
+
+		script: python3 gen_vcard generate
+
+Adding a -q after the script, generates qr codes for the data. 
+
+#### For generating employee leave details:
+1) Initializing table:
+
+		script: python3 gen_vcard db --createtb
+
+2) Loading employee leave table:
+
+		script: python3 gen_vcard load -l
+
+3) Generating details:
+
+		script python3 gen_vcard generate -e <employee id>
+
+Sample details for employee of id 2:
+
+		Employee Name: Stephanie Hayes
+		Employee Id: 3
+		Max leaves: 5
+		Leaves left: 4
 
 
-Eg: Typing in:
 
-	python3 gen_vcard.py <csv file> -h 
-
-Shows a help message and details various other options that are available.
-
-	python3 gen_vcard.py <csv file> -n15
-
-Creates the first 15 employees' Vcards and QR codes into 'vcards' directory.\
-Note: Entering the script without the number option, generates Vcards and Qr codes for 10 employee details in the csv file. 
-
-Several options can be witten in a same script for added functionality.\
-Eg:
-
-	python3 gen_vcard.py <csv file> -n15 -vc
-
-Generates Vcards for the first 15 employees in the csv file.
- 
 ### Output:
 
 A new directory called 'vcards' will be created.\
