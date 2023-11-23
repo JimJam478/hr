@@ -3,3 +3,4 @@ requirements.txt/
 .coverage/
 run.log/
 vcards/
+out.csv/
