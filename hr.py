@@ -47,6 +47,7 @@ def parse_args():
 
     leave_info_parser = subparsers.add_parser("linfo", help="Get leave information for a single employee")
     leave_info_parser.add_argument("empid",help='Id of employee',type=int)
+    leave_info_parser.add_argument("--exp",help="export into csv file")
 
     
     args = parser.parse_args()
@@ -173,7 +174,9 @@ Employee Designation: {designation}
 email: {email}
 Max leaves:  {max_leaves}
 Leaves left: {leaves_left}
-''')    
+''')        
+            if args.exp != None:
+                writer_csv(args.exp,f_name, l_name, email, designation, max_leaves,leaves_left)
     if data == []:
         sql = f'''select e.first_name, e.last_name, e.email, e.designation, d.max_leaves from employees e
 join employee_designation d on e.designation = d.designation
@@ -193,8 +196,15 @@ email: {email}
 Max leaves:  {max_leaves}
 Leaves left: {leaves_left}
 ''')
-    return f_name, l_name, email, designation, max_leaves, leaves_left
-
+            if args.exp != None:
+                writer_csv(args.exp,f_name, l_name, email, designation, max_leaves,leaves_left)
+    
+def writer_csv(file,f_name, l_name, email, designation, max_leaves,leaves_left):
+    with open(file, 'a',newline="") as outcsv:   
+        writer = csv.writer(outcsv)
+        writer.writerow((f_name, l_name, email, designation, max_leaves,leaves_left))
+    return file  
+    
 def main():
     if not os.path.exists('vcards'):
         os.mkdir('vcards')
