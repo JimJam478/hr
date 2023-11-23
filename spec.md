@@ -1,11 +1,16 @@
-# Vcard/QR code generator
+# HR project
 ## By: Allen K
 ## 14.11.2023
 
 ### Objective:
 	
-Generates Vcards and QR codes from a list of employee details in a csv file.
+Generates employee details, Vcards, QR codes and leave details. 
 
+### input
+
+csv file containing employee details.\
+eg: details.csv
+	
 ### Usage:
 
 The csv file must contain employee details in the following format:\
@@ -14,102 +19,77 @@ Eg: 'Alice','Bob','Software Engineer','alice@example.com','555-555-5555'
 
 The next employee's detail must be written in the next row/line in the csv file.
 	
-	Script: python3 gen_vcards.py <csv file>
+#### For generating employee details, Vcards, QRcodes:
 
-Once the script is entered, each row in the csv file is parsed and a Vcard, QR code is generated for each employee.\
-Each Vcard file will be of the format: lastname_firstname.vcf\
-Each Qr file will be of the format: lastname_firstname.qr.png
-
-Some functionalities are available in the form of options and subcommands in the programme.\
-
-	script: python3 gen_vcard.py <csv file> <option> <subcommand> <subcommand option>
-
-Options are prefixed with a '-' symbol.\
-Entering python3 gen_vcard.py -h, gives the following output:
-
-	positional arguments:
-	{db,load,generate}  sub command help
-		db                database commands
-		load              load file commands
-		generate          generate commands
-
-	options:
-	-h, --help          show this help message and exit
-	-v, --verbose       Print detailed logging
-	-c, --concise       Print concise logging
-
-Each subcommand has its own help command, if -h is used in the script after the subcommand.\
-
-Eg: python3 gen_vcard db -h, gives the following output:
-
-	options:
-	-h, --help              show this help message and exit
-	-i, --initdb            Initialize database
-	--createtb              Create a table in database
-	--deltb DELTB           Delete specific table in database
-	-d DELDB, --deldb DELDB Delete database
-
-#### For generating Vcards, the following commands have to be entered:\
 1) Initialize database
 
-	script: python3 gen_vcard db -i
-	(This script creates a company database and an employees table)
+	script: python3 hr.py initdb
+	(This script creates a database and an employees table, employees leaves table and a designation table)
 
 2) Load data
 
-		script: python3 gen_vcard load -f <csv_file>
+		script: python3 hr.py load <csv_file>
 
-3) Generate vcards
+3) Generate details
 
-		script: python3 gen_vcard generate
+		script: python3 hr.py info <employee id>
 
-Adding a -q after the script, generates qr codes for the data. 
+4) Generate Vcards
+
+		script: python3 hr.py info <employee id> --vcard
+
+This will display a vcard along with the employee details.\
+The vcard will also be saved in a folder called vcards.
+
+5) Generate QR codes:
+
+		script: python3 hr.py info <employee id> --qrcode
+
+QR code will be saved into the vcards folder.\
+Size of QR can be adjusted by adding -s [size of qr].
+(Max size: 530)
+
+Sample details for an employee will be of the following format:
+
+		Name        : Craig Tyler
+		Designation : Junior Engineer
+		Email       : craig.tyler@sanchez.com
+		Phone       : (412)411-3060
 
 #### For generating employee leave details:
+
 1) Initializing table:
 
-		script: python3 gen_vcard db --createtb
+Table will be generated while initializing the database.
 
 2) Loading employee leave table:
 
-		script: python3 gen_vcard load -l
+		script: python3 hr.py leave [date] [reason] [employee id]	
 
 3) Generating details:
 
-		script python3 gen_vcard generate -e <employee id>
+		script: python3 gen_vcard linfo <employee id>
 
-Sample details for employee of id 2:
+Leave details for employees can be exported into a csv file by using the following script:
 
-		Employee Name: Stephanie Hayes
-		Employee Id: 3
-		Max leaves: 5
-		Leaves left: 4
+		script: python3 gen_vcard linfo <employee id> --exp <csv file>
 
+Sample employee leave details will be of the following format:
 
+		Employee Name: Natasha Brown
+		Employee Designation: Staff Engineer
+		email: natas.brown@contreras.com
+		Max leaves:  20
+		Leaves left: 17
 
 ### Output:
 
-A new directory called 'vcards' will be created.\
+A folder directory called 'vcards' will be created.\
 This directory will contain all the Vcards and QR codes.
 Note: If the directory 'vcards' already exists, an error will show up.
-	
-If a perticular row in the csv file contains the following employee details:\
-	'Alice','Bob','Software Engineer','alice@example.com','555-555-5555'
-	
-Files named 'alice_bob.vcf' and 'alice_bob.qr.png' will be generated.\
-The file 'alice_bob.vcf' will contain the following:
 
-	BEGIN:VCARD
-	VERSION:2.1
-	N:Alice;Bob
-	FN:Bob Alice
-	ORG:Authors, Inc.
-	TITLE:Software Engineer
-	TEL;WORK;VOICE:555-555-5555
-	ADR;WORK:;;100 Flat Grape Dr.;Fresno;CA;95555;United States of America
-	EMAIL;PREF;INTERNET:alice@example.com
-	REV:20150922T195243Z
-	END:VCARD
+A csv file of users choice containing employee leave details. 
+	
 	
 
 	   
