@@ -169,7 +169,18 @@ def get_leave_data(args):
         if item in data:
             count, f_name, l_name, email, designation, max_leaves = item
             leaves_left = max_leaves - count
-            print(f'''Employee Name: {f_name} {l_name}
+            
+            if leaves_left == 0:
+                print(f'''
+No leaves left for:
+Employee Name:          {f_name} {l_name}
+Employee Designation:   {designation}
+Leaves taken:           {count}/{max_leaves}
+''')
+                exit()
+            
+            print(f'''
+Employee Name: {f_name} {l_name}
 Employee Designation: {designation}
 email: {email}
 Max leaves:  {max_leaves}
@@ -190,7 +201,8 @@ where e.id={id} group by e.id,e.first_name,e.email,d.max_leaves;'''
         for item in info:
             f_name, l_name, email, designation, max_leaves = item
             leaves_left = max_leaves
-            print(f'''Employee Name: {f_name} {l_name}
+            print(f'''
+Employee Name: {f_name} {l_name}
 Employee Designation: {designation}
 email: {email}
 Max leaves:  {max_leaves}
