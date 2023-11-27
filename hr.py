@@ -151,20 +151,34 @@ Phone       : {phone}""")
     conn.close()
 
 def join_leave_table(args,id):
-    query = f'''select count (e.id) as count, e.first_name, e.last_name , e.email , e.designation, d.max_leaves from employees e
+    query = '''select count (e.id) as count, e.first_name, e.last_name , e.email , e.designation, d.max_leaves from employees e
 join employee_leaves l on e.id = l.employee_id join employee_designation d on e.designation = d.designation
-where e.id={id} group by e.id,e.first_name,e.email,d.max_leaves;'''
+where e.id=%s group by e.id,e.first_name,e.email,d.max_leaves;'''
     conn = psycopg2.connect(dbname=args.dbname)
     cursor = conn.cursor()
-    cursor.execute(query,id)
+    cursor.execute(query,[id])
     data = cursor.fetchall()
     cursor.close()
     conn.close()
     return data
 
+def get_leave_none_taken(args,id):
+    sql = '''select e.first_name, e.last_name, e.email, e.designation, d.max_leaves from employees e
+join employee_designation d on e.designation = d.designation
+where e.id= %s group by e.id,e.first_name,e.email,d.max_leaves;'''
+    conn = psycopg2.connect(dbname=args.dbname)
+    cursor = conn.cursor()
+    cursor.execute(sql,[id])
+    info = cursor.fetchall()
+    cursor.close()
+    conn.close()
+    return info
+
+
 def get_leave_data(args):
     id = args.empid
     data = join_leave_table(args,id)
+    
     for item in data:
         if item in data:
             count, f_name, l_name, email, designation, max_leaves = item
@@ -188,16 +202,10 @@ Leaves left: {leaves_left}
 ''')        
             if args.exp != None:
                 writer_csv(args.exp,f_name, l_name, email, designation, max_leaves,leaves_left)
+
     if data == []:
-        sql = f'''select e.first_name, e.last_name, e.email, e.designation, d.max_leaves from employees e
-join employee_designation d on e.designation = d.designation
-where e.id={id} group by e.id,e.first_name,e.email,d.max_leaves;'''
-        conn = psycopg2.connect(dbname=args.dbname)
-        cursor = conn.cursor()
-        cursor.execute(sql,id)
-        info = cursor.fetchall()
-        cursor.close()
-        conn.close()
+        info = get_leave_none_taken(args,id)
+        
         for item in info:
             f_name, l_name, email, designation, max_leaves = item
             leaves_left = max_leaves
@@ -210,6 +218,9 @@ Leaves left: {leaves_left}
 ''')
             if args.exp != None:
                 writer_csv(args.exp,f_name, l_name, email, designation, max_leaves,leaves_left)
+        
+        if info == []:
+            print('Employee with id',id,'doesn\'t exist')
     
 def writer_csv(file,f_name, l_name, email, designation, max_leaves,leaves_left):
     with open(file, 'a',newline="") as outcsv:   
