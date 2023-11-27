@@ -127,8 +127,9 @@ def get_info_employee(args):
     cursor = conn.cursor()
     query = "SELECT first_name, last_name, designation, email, phone_number from employees where id = %s"
     cursor.execute(query, (args.id,))
+    
     fname, lname, designation, email, phone = cursor.fetchone()
-
+    
     print (f"""
 Name        : {fname} {lname}
 Designation : {designation}
@@ -144,13 +145,14 @@ Phone       : {phone}
         logger.info("Generated %s_%s.vcf",lname,fname)
 
     if (args.qrcode):
-        with open(os.path.join('vcards',f'{lname.lower()}_{fname.lower()}.qr.png'),'wb') as f:
+        with open(os.path.join('vcards',f'{lname.lower()}_{fname.lower()}.png'),'wb') as f:
             qr = generate_qr_code_content(lname, fname, designation, email, phone,args.size)
             f.write(qr)
             logger.info("Generated %s_%s.png",lname,fname)
 
     cursor.close()
     conn.close()
+    
 
 def join_leave_table(args,id):
     query = '''select count (e.id) as count, e.first_name, e.last_name , e.email , e.designation, d.max_leaves from employees e
@@ -175,7 +177,6 @@ where e.id= %s group by e.id,e.first_name,e.email,d.max_leaves;'''
     cursor.close()
     conn.close()
     return info
-
 
 def get_employee_leave_data(args):
     id = args.empid
