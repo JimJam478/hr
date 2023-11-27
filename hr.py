@@ -53,7 +53,7 @@ def parse_args():
     args = parser.parse_args()
     return args
 
-def get_table_in_db(args):
+def create_table_in_db(args):
     with open("queries/init.sql") as f:
         query = f.read()
         logger.debug(query)
@@ -236,7 +236,7 @@ def main():
     try:
         args = parse_args()
         setup_logging(args.v)
-        operations = {"initdb":get_table_in_db,
+        operations = {"initdb":create_table_in_db,
                       "load":load_data_employees,
                       "info":get_info_employee,
                       "leave":load_data_leaves,
