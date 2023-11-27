@@ -88,7 +88,7 @@ def load_data_employees(args):
             query = "insert into employees(last_name, first_name, designation, email, phone_number) values (%s, %s, %s, %s, %s)"
             cursor.execute(query, (lname, fname, designation, email, phone))
         conn.commit()
-        logger.info("Employees table updated successfully!!")
+        logger.info("Employees updated successfully!!")
     cursor.close()
     conn.close()
 
@@ -105,8 +105,7 @@ def load_data_leaves(args):
     conn.close()
 
 def generate_vcard_content(lname,fname,designation,email,phone):
-  return f"""
-  BEGIN:VCARD
+  return f"""BEGIN:VCARD
   VERSION:2.1
   N:{lname};{fname}
   FN:{fname} {lname}
@@ -119,8 +118,8 @@ def generate_vcard_content(lname,fname,designation,email,phone):
   END:VCARD
   """
 
-def generate_qr_code_content(l_name,f_name,designation,email,phone,size):
-  qr_code = requests.get(f"https://chart.googleapis.com/chart?cht=qr&chs={size}x{size}&chl={l_name,f_name,designation,email,phone}")
+def generate_qr_code_content(lname, fname, designation, email, phone,size):
+  qr_code = requests.get(f"https://chart.googleapis.com/chart?cht=qr&chs={size}x{size}&chl={lname, fname, designation, email, phone}")
   return qr_code.content
 
 def get_info_employee(args):
@@ -141,13 +140,14 @@ Phone       : {phone}
         with open(os.path.join('vcards',f'{lname.lower()}_{fname.lower()}.vcf'),'w') as f:
             vcard = generate_vcard_content(lname, fname, designation, email, phone)
             f.write(vcard)
-            logger.debug("Generated %s_%s.vcf",lname,fname)
         print (f"\n{vcard}")
+        logger.info("Generated %s_%s.vcf",lname,fname)
 
     if (args.qrcode):
-        with open(os.path.join('vcards',f'{lname.lower()}_{fname.lower()}.png'),'w') as f:
-            qr = generate_vcard_content(lname, fname, designation, email, phone)
+        with open(os.path.join('vcards',f'{lname.lower()}_{fname.lower()}.qr.png'),'wb') as f:
+            qr = generate_qr_code_content(lname, fname, designation, email, phone,args.size)
             f.write(qr)
+            logger.info("Generated %s_%s.png",lname,fname)
 
     cursor.close()
     conn.close()
