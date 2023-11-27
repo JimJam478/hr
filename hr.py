@@ -2,10 +2,10 @@ import argparse
 import csv 
 import logging
 import os
-import requests
 import sys
 
 import psycopg2
+import requests
 
 class HRException(Exception): pass
 
@@ -54,14 +54,14 @@ def parse_args():
     return args
 
 def get_table_in_db(args):
-    with open("data/init.sql") as f:
+    with open("queries/init.sql") as f:
         query = f.read()
         logger.debug(query)
     try:
         conn = psycopg2.connect(dbname=args.dbname)
         cursor = conn.cursor()
         cursor.execute(query)   
-        logger.info("Table created successfully!!")
+        logger.info("Tables created successfully!!")
         conn.commit()
         conn.close()
 
@@ -93,14 +93,14 @@ def load_data_employees(args):
     conn.close()
 
 def load_data_leaves(args):
-    with open("data/leaves.sql") as f:
+    with open("queries/leaves.sql") as f:
         query = f.read()
         logger.debug(query)
     conn = psycopg2.connect(dbname=args.dbname)
     cursor = conn.cursor()
     cursor.execute(query,(args.date,args.reason,args.id))
     conn.commit()
-    logger.info("Employee_leaves table updated successfully!!")
+    logger.info("Employee id:%s added succesfully!",args.id)
     cursor.close()
     conn.close()
 
@@ -123,17 +123,19 @@ def generate_qr_code_content(l_name,f_name,designation,email,phone,size):
   qr_code = requests.get(f"https://chart.googleapis.com/chart?cht=qr&chs={size}x{size}&chl={l_name,f_name,designation,email,phone}")
   return qr_code.content
 
-def get_info(args):
+def get_info_employee(args):
     conn = psycopg2.connect(dbname=args.dbname)
     cursor = conn.cursor()
     query = "SELECT first_name, last_name, designation, email, phone_number from employees where id = %s"
     cursor.execute(query, (args.id,))
     fname, lname, designation, email, phone = cursor.fetchone()
 
-    print (f"""Name        : {fname} {lname}
+    print (f"""
+Name        : {fname} {lname}
 Designation : {designation}
 Email       : {email}
-Phone       : {phone}""")
+Phone       : {phone}
+""")
     
     if (args.vcard):
         with open(os.path.join('vcards',f'{lname.lower()}_{fname.lower()}.vcf'),'w') as f:
@@ -175,16 +177,16 @@ where e.id= %s group by e.id,e.first_name,e.email,d.max_leaves;'''
     return info
 
 
-def get_leave_data(args):
+def get_employee_leave_data(args):
     id = args.empid
-    data = join_leave_table(args,id)
+    employee_leave_data = join_leave_table(args,id)
     
-    for item in data:
-        if item in data:
+    for item in employee_leave_data:
+        if item in employee_leave_data:
             count, f_name, l_name, email, designation, max_leaves = item
             leaves_left = max_leaves - count
             
-            if leaves_left == 0:
+            if leaves_left <= 0:
                 print(f'''
 No leaves left for:
 Employee Name:          {f_name} {l_name}
@@ -203,10 +205,10 @@ Leaves left: {leaves_left}
             if args.exp != None:
                 writer_csv(args.exp,f_name, l_name, email, designation, max_leaves,leaves_left)
 
-    if data == []:
-        info = get_leave_none_taken(args,id)
+    if employee_leave_data == []:
+        ideal_employee_leave_data = get_leave_none_taken(args,id)
         
-        for item in info:
+        for item in ideal_employee_leave_data:
             f_name, l_name, email, designation, max_leaves = item
             leaves_left = max_leaves
             print(f'''
@@ -219,7 +221,7 @@ Leaves left: {leaves_left}
             if args.exp != None:
                 writer_csv(args.exp,f_name, l_name, email, designation, max_leaves,leaves_left)
         
-        if info == []:
+        if ideal_employee_leave_data == []:
             print('Employee with id',id,'doesn\'t exist')
     
 def writer_csv(file,f_name, l_name, email, designation, max_leaves,leaves_left):
@@ -236,9 +238,9 @@ def main():
         setup_logging(args.v)
         operations = {"initdb":get_table_in_db,
                       "load":load_data_employees,
-                      "info":get_info,
+                      "info":get_info_employee,
                       "leave":load_data_leaves,
-                      "linfo":get_leave_data}
+                      "linfo":get_employee_leave_data}
         operations[args.subcommand](args)
     except HRException as e:
         logger.error("Program aborted, %s", e)
