@@ -27,12 +27,13 @@ def setup_logging(is_verbose):
 def parse_args():
     parser = argparse.ArgumentParser(description="HR tool")
     parser.add_argument("--dbname", help="Name of database to use", default="hr")
-    parser.add_argument("-v", help="Enable verbose debug logging", action="store_true", default=False)
+    
     subparsers = parser.add_subparsers(dest="subcommand",help='sub command help')
     subparsers.add_parser("initdb", help="initialise the database")
 
     load_parser = subparsers.add_parser("load", help="load data from csv file")
     load_parser.add_argument("employees_file", help="List of employees to import")
+    load_parser.add_argument("-v", help="Enable verbose debug logging", action="store_true", default=False)
     
     info_parser = subparsers.add_parser("info", help="Get information for a single employee")
     info_parser.add_argument("id", help="employee id")
@@ -40,17 +41,15 @@ def parse_args():
     info_parser.add_argument("--qrcode", action="store_true", default=False, help="Generate qrcode for employee")
     info_parser.add_argument("-s", "--size", help="Size of qr codes", action='store', type=int, default=500)
    
-    leave_parser = subparsers.add_parser("leave", help="Leave commands of employee")
+    leave_parser = subparsers.add_parser("leave", help="Add leave for an employee")
     leave_parser.add_argument("id",help="Id of employee on leave",type=int)
     leave_parser.add_argument("date",help="Date of leave [YYYY-MM-DD]",type=str)
     leave_parser.add_argument("reason",help="Reason for leave",type=str)
     
-
     leave_info_parser = subparsers.add_parser("leave_info", help="Get leave information for a single employee")
     leave_info_parser.add_argument("empid",help='Id of employee',type=int)
     leave_info_parser.add_argument("--exp",help="export into csv file [filename.csv]")
 
-    
     args = parser.parse_args()
     return args
 
