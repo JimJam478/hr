@@ -23,8 +23,8 @@ The next employee's detail must be written in the next row/line in the csv file.
 
 1) Initialize database
 
-	script: python3 hr.py initdb
-	(This script creates a database and an employees table, employees leaves table and a designation table)
+		script: python3 hr.py initdb
+	This script creates a database and an employees table, employee leaves table and a designation table.
 
 2) Load data
 
@@ -38,18 +38,18 @@ The next employee's detail must be written in the next row/line in the csv file.
 
 		script: python3 hr.py info <employee id> --vcard
 
-This will display a vcard along with the employee details.\
-The vcard will also be saved in a folder called vcards.
+	This will display a vcard along with the employee details.\
+	The vcard will also be saved in a folder called vcards.
 
 5) Generate QR codes:
 
 		script: python3 hr.py info <employee id> --qrcode
 
-QR code will be saved into the vcards folder.\
-Size of QR can be adjusted by adding -s [size of qr].
-(Max size: 530)
+	QR code will be saved into the vcards folder.\
+	Size of QR can be adjusted by adding -s [size of qr].
+	(Max size: 530)
 
-Sample details for an employee will be of the following format:
+ Sample details for an employee will be of the following format:
 
 		Name        : Craig Tyler
 		Designation : Junior Engineer
@@ -60,7 +60,7 @@ Sample details for an employee will be of the following format:
 
 1) Initializing table:
 
-Table will be generated while initializing the database.
+	Table will be generated while initializing the database.
 
 2) Loading employee leave table:
 
@@ -84,7 +84,7 @@ Sample employee leave details will be of the following format:
 
 ### Output:
 
-A folder directory called 'vcards' will be created.\
+A directory called 'vcards' will be created.\
 This directory will contain all the Vcards and QR codes.
 Note: If the directory 'vcards' already exists, an error will show up.
 
