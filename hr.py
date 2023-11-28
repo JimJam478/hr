@@ -27,7 +27,8 @@ def setup_logging(is_verbose):
 def parse_args():
     parser = argparse.ArgumentParser(description="HR tool")
     parser.add_argument("--dbname", help="Name of database to use", default="hr")
-    
+    parser.add_argument("-v", help="Enable verbose debug logging", action="store_true", default=False)
+
     subparsers = parser.add_subparsers(dest="subcommand",help='sub command help')
     subparsers.add_parser("initdb", help="initialise the database")
 
