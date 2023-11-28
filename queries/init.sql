@@ -10,7 +10,7 @@ phone_number VARCHAR(80)
 create table if not exists employee_leaves (
 id serial primary key,
 leave_date date not null,
-reason varchar(80) not null,
+reason varchar(80),
 employee_id integer references employees(id), 
 unique (employee_id,leave_date)
 );
