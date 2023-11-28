@@ -41,13 +41,14 @@ def parse_args():
     info_parser.add_argument("-s", "--size", help="Size of qr codes", action='store', type=int, default=500)
    
     leave_parser = subparsers.add_parser("leave", help="Leave commands of employee")
-    leave_parser.add_argument("date",help="Date of leave",type=str)
-    leave_parser.add_argument("reason",help="Reason for leave",type=str)
     leave_parser.add_argument("id",help="Id of employee on leave",type=int)
+    leave_parser.add_argument("date",help="Date of leave [YYYY-MM-DD]",type=str)
+    leave_parser.add_argument("reason",help="Reason for leave",type=str)
+    
 
-    leave_info_parser = subparsers.add_parser("linfo", help="Get leave information for a single employee")
+    leave_info_parser = subparsers.add_parser("leave_info", help="Get leave information for a single employee")
     leave_info_parser.add_argument("empid",help='Id of employee',type=int)
-    leave_info_parser.add_argument("--exp",help="export into csv file")
+    leave_info_parser.add_argument("--exp",help="export into csv file [filename.csv]")
 
     
     args = parser.parse_args()
@@ -105,17 +106,18 @@ def load_data_leaves(args):
     conn.close()
 
 def generate_vcard_content(lname,fname,designation,email,phone):
-  return f"""BEGIN:VCARD
-  VERSION:2.1
-  N:{lname};{fname}
-  FN:{fname} {lname}
-  ORG:Authors, Inc.
-  TITLE:{designation}
-  TEL;WORK;VOICE:{phone}
-  ADR;WORK:;;100 Flat Grape Dr.;Fresno;CA;95555;United States of America
-  EMAIL;PREF;INTERNET:{email}
-  REV:20150922T195243Z
-  END:VCARD
+  return f"""
+BEGIN:VCARD
+VERSION:2.1
+N:{lname};{fname}
+FN:{fname} {lname}
+ORG:Authors, Inc.
+TITLE:{designation}
+TEL;WORK;VOICE:{phone}
+ADR;WORK:;;100 Flat Grape Dr.;Fresno;CA;95555;United States of America
+EMAIL;PREF;INTERNET:{email}
+REV:20150922T195243Z
+END:VCARD
   """
 
 def generate_qr_code_content(lname, fname, designation, email, phone,size):
@@ -125,33 +127,37 @@ def generate_qr_code_content(lname, fname, designation, email, phone,size):
 def get_info_employee(args):
     conn = psycopg2.connect(dbname=args.dbname)
     cursor = conn.cursor()
-    query = "SELECT first_name, last_name, designation, email, phone_number from employees where id = %s"
-    cursor.execute(query, (args.id,))
-    
-    fname, lname, designation, email, phone = cursor.fetchone()
-    
-    print (f"""
+    try:
+        query = "SELECT first_name, last_name, designation, email, phone_number from employees where id = %s"
+        cursor.execute(query, (args.id,))
+        employee_info = cursor.fetchone()
+        fname, lname, designation, email, phone = employee_info
+        
+        print (f"""
 Name        : {fname} {lname}
 Designation : {designation}
 Email       : {email}
 Phone       : {phone}
 """)
-    
-    if (args.vcard):
-        with open(os.path.join('vcards',f'{lname.lower()}_{fname.lower()}.vcf'),'w') as f:
-            vcard = generate_vcard_content(lname, fname, designation, email, phone)
-            f.write(vcard)
-        print (f"\n{vcard}")
-        logger.info("Generated %s_%s.vcf",lname,fname)
+        
+        if (args.vcard):
+            with open(os.path.join('vcards',f'{lname.lower()}_{fname.lower()}.vcf'),'w') as f:
+                vcard = generate_vcard_content(lname, fname, designation, email, phone)
+                f.write(vcard)
+            print (f"\n{vcard}")
+            logger.info("Generated %s_%s.vcf",lname,fname)
 
-    if (args.qrcode):
-        with open(os.path.join('vcards',f'{lname.lower()}_{fname.lower()}.png'),'wb') as f:
-            qr = generate_qr_code_content(lname, fname, designation, email, phone,args.size)
-            f.write(qr)
-            logger.info("Generated %s_%s.png",lname,fname)
+        if (args.qrcode):
+            with open(os.path.join('vcards',f'{lname.lower()}_{fname.lower()}.png'),'wb') as f:
+                qr = generate_qr_code_content(lname, fname, designation, email, phone,args.size)
+                f.write(qr)
+                logger.info("Generated %s_%s.png",lname,fname)
 
-    cursor.close()
-    conn.close()
+        cursor.close()
+        conn.close()
+
+    except TypeError:
+        raise HRException (f'Employee id. {args.id} does not exist')
     
 
 def join_leave_table(args,id):
@@ -223,12 +229,13 @@ Leaves left: {leaves_left}
                 writer_csv(args.exp,f_name, l_name, email, designation, max_leaves,leaves_left)
         
         if ideal_employee_leave_data == []:
-            print('Employee with id',id,'doesn\'t exist')
+            logger.error(f'Employee with id. {id} doesn\'t exist.')
     
 def writer_csv(file,f_name, l_name, email, designation, max_leaves,leaves_left):
-    with open(file, 'a',newline="") as outcsv:   
+    with open(file, 'a',newline="") as outcsv:
         writer = csv.writer(outcsv)
         writer.writerow((f_name, l_name, email, designation, max_leaves,leaves_left))
+        logger.info(f'Exported into csv file: {file}')
     return file  
     
 def main():
@@ -241,7 +248,7 @@ def main():
                       "load":load_data_employees,
                       "info":get_info_employee,
                       "leave":load_data_leaves,
-                      "linfo":get_employee_leave_data}
+                      "leave_info":get_employee_leave_data}
         operations[args.subcommand](args)
     except HRException as e:
         logger.error("Program aborted, %s", e)
