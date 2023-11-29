@@ -1,4 +1,5 @@
 import argparse
+import configparser
 import csv 
 import logging
 import os
@@ -25,8 +26,12 @@ def setup_logging(is_verbose):
     logger.addHandler(handler)
   
 def parse_args():
+    
+    config = configparser.ConfigParser()
+    config.read('config.ini')
+
     parser = argparse.ArgumentParser(description="HR tool")
-    parser.add_argument("--dbname", help="Name of database to use", default="hr")
+    parser.add_argument("--dbname", help="Name of database to use", default=config.get('Database','dbname'))
     parser.add_argument("-v", help="Enable verbose debug logging", action="store_true", default=False)
 
     subparsers = parser.add_subparsers(dest="subcommand",help='sub command help')
@@ -54,7 +59,15 @@ def parse_args():
     args = parser.parse_args()
     return args
 
+def config_parse(dbname):
+    config = configparser.ConfigParser()
+    config.read("config.ini")
+    config.set('Database','dbname',dbname)
+    with open('config.ini','w') as f:
+        config.write(f)
+
 def create_table_in_db(args):
+    config_parse(args.dbname)
     with open("queries/init.sql") as f:
         query = f.read()
         logger.debug(query)
