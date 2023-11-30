@@ -74,7 +74,7 @@ def create_table_in_db(args):
     config_parse(args.dbname)
     try:
         db_uri = f"postgresql:///{args.dbname}"
-        db.create_database_tables(db_uri)
+        db.create_all(db_uri)
         logger.info("Tables created successfully!!")
         session = db.get_session(db_uri)
         d1 = db.Designation(title="Staff Engineer", max_leaves=20)
@@ -92,30 +92,34 @@ def create_table_in_db(args):
     except sqlalchemy.exc.OperationalError as e:
         raise HRException(f"Database '{args.dbname}' doesn't exist")
 
-def truncate_table():
-    args = parse_args()
-    conn = psycopg2.connect(dbname=args.dbname)
-    cursor = conn.cursor()
-    truncate_table = "TRUNCATE TABLE employees RESTART IDENTITY CASCADE"
-    cursor.execute(truncate_table)
-    conn.commit()
-    conn.close()
+# def truncate_table():
+#     args = parse_args()
+#     conn = psycopg2.connect(dbname=args.dbname)
+#     cursor = conn.cursor()
+#     truncate_table = "TRUNCATE TABLE employees RESTART IDENTITY CASCADE"
+#     cursor.execute(truncate_table)
+#     conn.commit()
+#     conn.close()
 
 def load_data_employees(args):
-    truncate_table()
-    conn = psycopg2.connect(dbname=args.dbname)
-    cursor = conn.cursor()
+    db_uri = f"postgresql:///{args.dbname}"
+    session = db.get_session(db_uri)
     with open(args.employees_file) as f:
         reader = csv.reader(f)
-        for lname, fname, designation, email, phone in reader:
+        for lname, fname, title, email, phone in reader:
+            q = sa.select(db.Designation).where(db.Designation.title == title)
+            designation = session.execute(q).scalar_one_or_none()
             logger.debug("Inserting %s", email)
-            query = "insert into employees(last_name, first_name, designation, email, phone_number) values (%s, %s, %s, %s, %s)"
-            cursor.execute(query, (lname, fname, designation, email, phone))
-        conn.commit()
-        logger.info("Employees updated successfully!!")
-    cursor.close()
-    conn.close()
-
+            employee = db.Employee(
+                last_name=lname,
+                first_name=fname,
+                email=email,
+                phone=phone,
+                title=designation,
+            )
+            session.add(employee)
+        session.commit()
+   
 def load_data_leaves(args):
     with open("queries/leaves.sql") as f:
         query = f.read()
