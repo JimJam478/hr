@@ -76,6 +76,18 @@ def create_table_in_db(args):
         db_uri = f"postgresql:///{args.dbname}"
         db.create_database_tables(db_uri)
         logger.info("Tables created successfully!!")
+        session = db.get_session(db_uri)
+        d1 = db.Designation(title="Staff Engineer", max_leaves=20)
+        d2 = db.Designation(title="Senior Engineer", max_leaves=18)
+        d3 = db.Designation(title="Junior Engineer", max_leaves=12)
+        d4 = db.Designation(title="Tech Lead", max_leaves=12)
+        d5 = db.Designation(title="Project Manager", max_leaves=15)
+        session.add(d1)
+        session.add(d2)
+        session.add(d3)
+        session.add(d4)
+        session.add(d5)
+        session.commit()
         
     except sqlalchemy.exc.OperationalError as e:
         raise HRException(f"Database '{args.dbname}' doesn't exist")
