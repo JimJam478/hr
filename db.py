@@ -12,12 +12,12 @@ class HRDBBase(DeclarativeBase):
 class Employee(HRDBBase):
     __tablename__ = "hrms_employees"
     id: Mapped[int] = mapped_column(primary_key=True)
-    last_name: Mapped[str] = mapped_column(String(50))
     first_name: Mapped[str] = mapped_column(String(50))
+    last_name: Mapped[str] = mapped_column(String(50))
     email: Mapped[str] = mapped_column(String(120))
     phone: Mapped[str] = mapped_column(String(100))
-    rank_id: Mapped[int] = mapped_column(ForeignKey("hrms_designation.id"))
-    rank: Mapped['Designation'] = relationship(back_populates="employees") 
+    title_id: Mapped[int] = mapped_column(ForeignKey("hrms_designation.id"))
+    title: Mapped['Designation'] = relationship(back_populates="employees") 
 
 class Leaves(HRDBBase):
     __tablename__ = "hrms_leaves"
@@ -33,9 +33,9 @@ class Leaves(HRDBBase):
 class Designation(HRDBBase):
     __tablename__ = "hrms_designation"
     id: Mapped[int] = mapped_column(primary_key=True)
-    Designation: Mapped[str] = mapped_column(String(50))
+    title   : Mapped[str] = mapped_column(String(50))
     max_leaves: Mapped[int] = mapped_column(Integer)
-    employees: Mapped["Employee"] = relationship(back_populates="rank")
+    employees: Mapped["Employee"] = relationship(back_populates="title")
 
 def create_database_tables(db_uri):
     logger = logging.getLogger("HR")
