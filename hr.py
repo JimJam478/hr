@@ -6,7 +6,11 @@ import os
 import sys
 
 import psycopg2
+import sqlalchemy as sa
+import sqlalchemy.exc 
 import requests
+
+import db 
 
 class HRException(Exception): pass
 
@@ -68,18 +72,12 @@ def config_parse(dbname):
 
 def create_table_in_db(args):
     config_parse(args.dbname)
-    with open("queries/init.sql") as f:
-        query = f.read()
-        logger.debug(query)
     try:
-        conn = psycopg2.connect(dbname=args.dbname)
-        cursor = conn.cursor()
-        cursor.execute(query)   
+        db_uri = f"postgresql:///{args.dbname}"
+        db.create_database_tables(db_uri)
         logger.info("Tables created successfully!!")
-        conn.commit()
-        conn.close()
-
-    except psycopg2.OperationalError as e:
+        
+    except sqlalchemy.exc.OperationalError as e:
         raise HRException(f"Database '{args.dbname}' doesn't exist")
 
 def truncate_table():
