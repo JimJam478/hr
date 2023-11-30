@@ -12,36 +12,36 @@ class HRDBBase(DeclarativeBase):
 class Employee(HRDBBase):
     __tablename__ = "hrms_employees"
     id: Mapped[int] = mapped_column(primary_key=True)
-    first_name: Mapped[str] = mapped_column(String(50))
-    last_name: Mapped[str] = mapped_column(String(50))
-    email: Mapped[str] = mapped_column(String(120))
-    phone: Mapped[str] = mapped_column(String(100))
-    title_id: Mapped[int] = mapped_column(ForeignKey("hrms_designation.id"))
-    title: Mapped['Designation'] = relationship(back_populates="employees") 
-
-class Leaves(HRDBBase):
-    __tablename__ = "hrms_leaves"
-    __table_args__ = (
-        UniqueConstraint("date","employee_id"),
-        )
-
-    id: Mapped[int] = mapped_column(primary_key=True)
-    date: Mapped[datetime.date] = mapped_column(Date())
-    reason: Mapped[str] = mapped_column(String(50))
-    employee_id: Mapped[int] = mapped_column(ForeignKey("hrms_employees.id"))
+    first_name: Mapped[str] =  mapped_column(String(50))
+    last_name: Mapped[str] =  mapped_column(String(50))
+    email: Mapped[str] =  mapped_column(String(120))
+    phone: Mapped[str] =  mapped_column(String(50))
+    title_id: Mapped[int] = mapped_column(ForeignKey('hrms_designations.id'))
+    title: Mapped["Designation"] = relationship(back_populates = "employees")
 
 class Designation(HRDBBase):
-    __tablename__ = "hrms_designation"
+    __tablename__ = "hrms_designations"
     id: Mapped[int] = mapped_column(primary_key=True)
-    title   : Mapped[str] = mapped_column(String(50))
+    title: Mapped[str] =  mapped_column(String(100))
     max_leaves: Mapped[int] = mapped_column(Integer)
-    employees: Mapped["Employee"] = relationship(back_populates="title")
+    employees: Mapped[List["Employee"]] = relationship(back_populates = "title")
 
-def create_database_tables(db_uri):
+class Leave(HRDBBase):
+    __tablename__ = "hrms_leaves"
+    __table_args__ = (        
+        UniqueConstraint("employee_id", "date"),
+        )
+    id: Mapped[int] = mapped_column(primary_key=True)
+    date: Mapped[datetime.date] = mapped_column(Date())
+    employee_id: Mapped[int] = mapped_column(ForeignKey('hrms_employees.id'))
+    reason: Mapped[str] =  mapped_column(String(200))
+
+
+def create_all(db_uri):
     logger = logging.getLogger("HR")
     engine = create_engine(db_uri)
     HRDBBase.metadata.create_all(engine)
-    logger.info("Created tables in database")
+    logger.info("Created database")
 
 def get_session(db_uri):
     engine = create_engine(db_uri)
