@@ -61,6 +61,9 @@ def parse_args():
     leave_info_parser.add_argument("empid",help='Id of employee',type=int)
     leave_info_parser.add_argument("--exp",help="export into csv file [filename.csv]")
 
+    export_parser = subparsers.add_parser("export", help="Get leave csv for all employee")
+    export_parser.add_argument("file_csv",help="export into csv file [filename.csv]")
+
     args = parser.parse_args()
     return args
 
@@ -246,7 +249,7 @@ Max leaves:           {max_leaves}
 Leaves left:          {leaves_left}
 ''')        
             if args.exp != None:
-                writer_csv(args.exp,f_name, l_name, email, designation, max_leaves,leaves_left)
+                writer_csv(args.exp,id,f_name, l_name, email, designation, max_leaves,leaves_left)
 
     if employee_leave_data == []:
         db_uri = f"postgresql:///{args.dbname}"
@@ -286,18 +289,86 @@ Max leaves:           {max_leaves}
 Leaves left:          {leaves_left}
 ''')
             if args.exp != None:
-                writer_csv(args.exp,f_name, l_name, email, designation, max_leaves,leaves_left)
-            
+                writer_csv(args.exp,id,f_name, l_name, email, designation, max_leaves,leaves_left)
+
         if ideal_employee_leave_data == []:
             logger.error(f'Employee with id:{id} doesn\'t exist.')
         
-def writer_csv(file,f_name, l_name, email, designation, max_leaves,leaves_left):
+def writer_csv(file,id,f_name, l_name, email, designation, max_leaves,leaves_left):
     with open(file, 'a',newline="") as outcsv:
         writer = csv.writer(outcsv)
-        writer.writerow((f_name, l_name, email, designation, max_leaves,leaves_left))
+        writer.writerow((id,f_name, l_name, email, designation, max_leaves,leaves_left))
         logger.info(f'Exported into csv file: {file}')
     return file  
-    
+
+def get_complete_leave_csv(args):
+    db_uri = f"postgresql:///{args.dbname}"
+    session = db.get_session(db_uri)
+    query = sa.select(sa.func.count(db.Employee.id))
+    emp_count = session.execute(query).fetchall()
+    file = args.file_csv
+    for i in emp_count:
+        count = i[0]
+    for i in range(1,count+1):
+        id = i
+        query = (
+        sa.select(sa.func.count(db.Employee.id),
+            db.Employee.first_name,
+            db.Employee.last_name,
+            db.Employee.email,
+            db.Designation.title,
+            db.Designation.max_leaves,
+        )
+        .where(
+            db.Employee.id == id,
+            db.Employee.id == db.Leave.employee_id,
+            db.Employee.title_id == db.Designation.id,
+        )
+        .group_by(
+            db.Employee.id,
+            db.Employee.first_name,
+            db.Employee.last_name,
+            db.Employee.email,
+            db.Designation.title, 
+            db.Designation.max_leaves,
+                )
+            )
+
+        employee_leave_data = session.execute(query).fetchall()
+        for item in employee_leave_data:
+            if item in employee_leave_data:
+                count, f_name, l_name, email, designation, max_leaves = item
+                leaves_left = max_leaves - count
+                writer_csv(file,id,f_name,l_name, email, designation, max_leaves,leaves_left)
+        
+        if employee_leave_data == []:
+            query = (
+            sa.select(
+                db.Employee.first_name,
+                db.Employee.last_name,
+                db.Employee.email,
+                db.Designation.title,
+                db.Designation.max_leaves,
+                    )
+            .where(
+                db.Employee.id == id,
+                db.Employee.title_id == db.Designation.id,
+                )
+            .group_by(
+                db.Employee.id,
+                db.Employee.first_name,
+                db.Employee.last_name,
+                db.Employee.email,
+                db.Designation.title, 
+                db.Designation.max_leaves,
+                    )
+                )
+            ideal_employee_leave_data = session.execute(query).fetchall()
+            for item in ideal_employee_leave_data:
+                f_name, l_name, email, designation, max_leaves = item
+                leaves_left = max_leaves
+                writer_csv(file,id,f_name, l_name, email, designation, max_leaves,leaves_left)
+
 def main():
     if not os.path.exists('vcards'):
         os.mkdir('vcards')
@@ -308,8 +379,10 @@ def main():
                       "load":load_data_employees,
                       "info":get_info_employee,
                       "leave":load_data_leaves,
-                      "leave_info":get_employee_leave_data}
+                      "leave_info":get_employee_leave_data,
+                      "export":get_complete_leave_csv}
         operations[args.subcommand](args)
+        
     except HRException as e:
         logger.error("Program aborted, %s", e)
         sys.exit(-1)
