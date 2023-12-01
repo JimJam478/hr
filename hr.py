@@ -185,20 +185,7 @@ Phone       : {phone}
                 logger.info("Generated %s_%s.png",lname,fname)
 
     except TypeError:
-        raise HRException (f'Employee id. {args.id} does not exist')
-    
-
-def join_leave_table(args,id):
-    query = '''select count (e.id) as count, e.first_name, e.last_name , e.email , e.designation, d.max_leaves from employees e
-join employee_leaves l on e.id = l.employee_id join employee_designation d on e.designation = d.designation
-where e.id=%s group by e.id,e.first_name,e.email,d.max_leaves;'''
-    conn = psycopg2.connect(dbname=args.dbname)
-    cursor = conn.cursor()
-    cursor.execute(query,[id])
-    data = cursor.fetchall()
-    cursor.close()
-    conn.close()
-    return data
+        raise HRException (f'Employee with id: {args.id} does not exist')
 
 def get_leave_none_taken(args,id):
     sql = '''select e.first_name, e.last_name, e.email, e.designation, d.max_leaves from employees e
