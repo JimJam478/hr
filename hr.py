@@ -193,19 +193,7 @@ Phone       : {phone}
 
     except TypeError:
         raise HRException (f'Employee with id: {args.id} does not exist')
-
-# def get_leave_none_taken(args,id):
-#     sql = '''select e.first_name, e.last_name, e.email, e.designation, d.max_leaves from employees e
-# join employee_designation d on e.designation = d.designation
-# where e.id= %s group by e.id,e.first_name,e.email,d.max_leaves;'''
-#     conn = psycopg2.connect(dbname=args.dbname)
-#     cursor = conn.cursor()
-#     cursor.execute(sql,[id])
-#     info = cursor.fetchall()
-#     cursor.close()
-#     conn.close()
-#     return info
-
+    
 def get_employee_leave_data(args):
     id = args.empid
     db_uri = f"postgresql:///{args.dbname}"
