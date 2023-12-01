@@ -71,12 +71,19 @@ def config_parse(dbname):
     with open('config.ini','w') as f:
         config.write(f)
 
+def truncate_designations_table(args):
+    db_uri = f"postgresql:///{args.dbname}"
+    session = db.get_session(db_uri)
+    session.execute(sa_txt('''TRUNCATE TABLE hrms_designations cascade''').execution_options(autocommit=True))
+    session.commit()
+    
 def create_table_in_db(args):
     config_parse(args.dbname)
     try:
         db_uri = f"postgresql:///{args.dbname}"
         db.create_all(db_uri)
         logger.info("Tables created successfully!!")
+        truncate_designations_table(args)
         session = db.get_session(db_uri)
         d1 = db.Designation(title="Staff Engineer", max_leaves=20)
         d2 = db.Designation(title="Senior Engineer", max_leaves=18)
@@ -93,7 +100,7 @@ def create_table_in_db(args):
     except sqlalchemy.exc.OperationalError as e:
         raise HRException(f"Database '{args.dbname}' doesn't exist")
 
-def truncate_table(args):
+def truncate_employees_table(args):
     db_uri = f"postgresql:///{args.dbname}"
     session = db.get_session(db_uri)
     session.execute(sa_txt('''TRUNCATE TABLE hrms_employees cascade''').execution_options(autocommit=True))
@@ -101,7 +108,7 @@ def truncate_table(args):
     logger.info('Employees table truncated !!')
 
 def load_data_employees(args):
-    truncate_table(args)
+    truncate_employees_table(args)
     db_uri = f"postgresql:///{args.dbname}"
     session = db.get_session(db_uri)
     with open(args.employees_file) as f:
@@ -187,22 +194,47 @@ Phone       : {phone}
     except TypeError:
         raise HRException (f'Employee with id: {args.id} does not exist')
 
-def get_leave_none_taken(args,id):
-    sql = '''select e.first_name, e.last_name, e.email, e.designation, d.max_leaves from employees e
-join employee_designation d on e.designation = d.designation
-where e.id= %s group by e.id,e.first_name,e.email,d.max_leaves;'''
-    conn = psycopg2.connect(dbname=args.dbname)
-    cursor = conn.cursor()
-    cursor.execute(sql,[id])
-    info = cursor.fetchall()
-    cursor.close()
-    conn.close()
-    return info
+# def get_leave_none_taken(args,id):
+#     sql = '''select e.first_name, e.last_name, e.email, e.designation, d.max_leaves from employees e
+# join employee_designation d on e.designation = d.designation
+# where e.id= %s group by e.id,e.first_name,e.email,d.max_leaves;'''
+#     conn = psycopg2.connect(dbname=args.dbname)
+#     cursor = conn.cursor()
+#     cursor.execute(sql,[id])
+#     info = cursor.fetchall()
+#     cursor.close()
+#     conn.close()
+#     return info
 
 def get_employee_leave_data(args):
     id = args.empid
-    employee_leave_data = join_leave_table(args,id)
-    
+    db_uri = f"postgresql:///{args.dbname}"
+    session = db.get_session(db_uri)
+    query = (
+        sa.select(sa.func.count(db.Employee.id),
+            db.Employee.first_name,
+            db.Employee.last_name,
+            db.Employee.email,
+            db.Designation.title,
+            db.Designation.max_leaves,
+        )
+        .where(
+            db.Employee.id == id,
+            db.Employee.id == db.Leave.employee_id,
+            db.Employee.title_id == db.Designation.id,
+        )
+        .group_by(
+            db.Employee.id,
+            db.Employee.first_name,
+            db.Employee.last_name,
+            db.Employee.email,
+            db.Designation.title, 
+            db.Designation.max_leaves,
+        )
+    )
+
+    employee_leave_data = session.execute(query).fetchall()
+
     for item in employee_leave_data:
         if item in employee_leave_data:
             count, f_name, l_name, email, designation, max_leaves = item
@@ -212,40 +244,65 @@ def get_employee_leave_data(args):
                 print(f'''
 No leaves left for:
 Employee Name:          {f_name} {l_name}
+Email:                  {email}
 Employee Designation:   {designation}
 Leaves taken:           {count}/{max_leaves}
 ''')
                 exit()
             
             print(f'''
-Employee Name: {f_name} {l_name}
+Employee Name:        {f_name} {l_name}
 Employee Designation: {designation}
-email: {email}
-Max leaves:  {max_leaves}
-Leaves left: {leaves_left}
+Email:                {email}
+Max leaves:           {max_leaves}
+Leaves left:          {leaves_left}
 ''')        
             if args.exp != None:
                 writer_csv(args.exp,f_name, l_name, email, designation, max_leaves,leaves_left)
 
     if employee_leave_data == []:
-        ideal_employee_leave_data = get_leave_none_taken(args,id)
-        
+        db_uri = f"postgresql:///{args.dbname}"
+        session = db.get_session(db_uri)
+        query = (
+            sa.select(
+                db.Employee.first_name,
+                db.Employee.last_name,
+                db.Employee.email,
+                db.Designation.title,
+                db.Designation.max_leaves,
+                    )
+            .where(
+                db.Employee.id == id,
+                db.Employee.title_id == db.Designation.id,
+                )
+            .group_by(
+                db.Employee.id,
+                db.Employee.first_name,
+                db.Employee.last_name,
+                db.Employee.email,
+                db.Designation.title, 
+                db.Designation.max_leaves,
+                    )
+                )
+        ideal_employee_leave_data = session.execute(query).fetchall()
+            
         for item in ideal_employee_leave_data:
+            
             f_name, l_name, email, designation, max_leaves = item
             leaves_left = max_leaves
             print(f'''
-Employee Name: {f_name} {l_name}
+Employee Name:        {f_name} {l_name}
 Employee Designation: {designation}
-email: {email}
-Max leaves:  {max_leaves}
-Leaves left: {leaves_left}
+email:                {email}
+Max leaves:           {max_leaves}
+Leaves left:          {leaves_left}
 ''')
             if args.exp != None:
                 writer_csv(args.exp,f_name, l_name, email, designation, max_leaves,leaves_left)
-        
+            
         if ideal_employee_leave_data == []:
-            logger.error(f'Employee with id. {id} doesn\'t exist.')
-    
+            logger.error(f'Employee with id:{id} doesn\'t exist.')
+        
 def writer_csv(file,f_name, l_name, email, designation, max_leaves,leaves_left):
     with open(file, 'a',newline="") as outcsv:
         writer = csv.writer(outcsv)
