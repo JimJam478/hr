@@ -7,6 +7,7 @@ import sys
 
 import psycopg2
 import sqlalchemy as sa
+from sqlalchemy.sql import text as sa_txt
 import sqlalchemy.exc 
 import requests
 
@@ -92,23 +93,22 @@ def create_table_in_db(args):
     except sqlalchemy.exc.OperationalError as e:
         raise HRException(f"Database '{args.dbname}' doesn't exist")
 
-# def truncate_table():
-#     args = parse_args()
-#     conn = psycopg2.connect(dbname=args.dbname)
-#     cursor = conn.cursor()
-#     truncate_table = "TRUNCATE TABLE employees RESTART IDENTITY CASCADE"
-#     cursor.execute(truncate_table)
-#     conn.commit()
-#     conn.close()
+def truncate_table(args):
+    db_uri = f"postgresql:///{args.dbname}"
+    session = db.get_session(db_uri)
+    session.execute(sa_txt('''TRUNCATE TABLE hrms_employees cascade''').execution_options(autocommit=True))
+    session.commit()
+    logger.info('Employees table truncated !!')
 
 def load_data_employees(args):
+    truncate_table(args)
     db_uri = f"postgresql:///{args.dbname}"
     session = db.get_session(db_uri)
     with open(args.employees_file) as f:
         reader = csv.reader(f)
         for lname, fname, title, email, phone in reader:
-            q = sa.select(db.Designation).where(db.Designation.title == title)
-            designation = session.execute(q).scalar_one_or_none()
+            query = sa.select(db.Designation).where(db.Designation.title == title)
+            designation = session.execute(query).scalar_one_or_none()
             logger.debug("Inserting %s", email)
             employee = db.Employee(
                 last_name=lname,
@@ -119,18 +119,18 @@ def load_data_employees(args):
             )
             session.add(employee)
         session.commit()
+        logger.info('Employees table loaded succesfully !')
    
 def load_data_leaves(args):
-    with open("queries/leaves.sql") as f:
-        query = f.read()
-        logger.debug(query)
-    conn = psycopg2.connect(dbname=args.dbname)
-    cursor = conn.cursor()
-    cursor.execute(query,(args.date,args.reason,args.id))
-    conn.commit()
-    logger.info("Employee id:%s added succesfully!",args.id)
-    cursor.close()
-    conn.close()
+    try:
+        db_uri = f"postgresql:///{args.dbname}"
+        session = db.get_session(db_uri)
+        d1 = db.Leave(date = args.date, employee_id = args.id, reason = args.reason)
+        session.add(d1)
+        session.commit()
+        logger.info("Employee with id:%s added succesfully!",args.id)
+    except sqlalchemy.exc.IntegrityError:
+        raise HRException (f'Employee with id:{args.id} has already taken leave on {args.date}')
 
 def generate_vcard_content(lname,fname,designation,email,phone):
   return f"""
@@ -152,12 +152,16 @@ def generate_qr_code_content(lname, fname, designation, email, phone,size):
   return qr_code.content
 
 def get_info_employee(args):
-    conn = psycopg2.connect(dbname=args.dbname)
-    cursor = conn.cursor()
+    db_uri = f"postgresql:///{args.dbname}"
+    session = db.get_session(db_uri)
     try:
-        query = "SELECT first_name, last_name, designation, email, phone_number from employees where id = %s"
-        cursor.execute(query, (args.id,))
-        employee_info = cursor.fetchone()
+        query = sa.select(db.Employee.first_name,
+                          db.Employee.last_name,
+                          db.Designation.title,
+                          db.Employee.email,
+                          db.Employee.phone).where(db.Employee.id == args.id)
+        
+        employee_info = session.execute(query).fetchone()
         fname, lname, designation, email, phone = employee_info
         
         print (f"""
@@ -179,9 +183,6 @@ Phone       : {phone}
                 qr = generate_qr_code_content(lname, fname, designation, email, phone,args.size)
                 f.write(qr)
                 logger.info("Generated %s_%s.png",lname,fname)
-
-        cursor.close()
-        conn.close()
 
     except TypeError:
         raise HRException (f'Employee id. {args.id} does not exist')
