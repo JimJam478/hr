@@ -9,7 +9,7 @@ Generates employee details, Vcards, QR codes and leave details.
 ### input
 
 csv file containing employee details.\
-eg: details.csv
+eg: details.csvs
 	
 ### Usage:
 
@@ -19,7 +19,7 @@ Eg: 'Alice','Bob','Software Engineer','alice@example.com','555-555-5555'
 
 The next employee's detail must be written in the next row/line in the csv file.
 	
-#### For generating employee details, Vcards, QRcodes:
+#### Generating employee details, Vcards, QRcodes:
 
 1) Initialize database
 
@@ -56,7 +56,7 @@ The next employee's detail must be written in the next row/line in the csv file.
 		Email       : craig.tyler@sanchez.com
 		Phone       : (412)411-3060
 
-#### For generating employee leave details:
+#### Generating employee leave details:
 
 1) Initializing table:
 
