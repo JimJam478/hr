@@ -169,7 +169,8 @@ def get_info_employee(args):
                           db.Employee.last_name,
                           db.Designation.title,
                           db.Employee.email,
-                          db.Employee.phone).where(db.Employee.id == args.id)
+                          db.Employee.phone).where(db.Employee.id == args.id,
+                                                   db.Employee.title_id == db.Designation.id)
         
         employee_info = session.execute(query).fetchone()
         fname, lname, designation, email, phone = employee_info
