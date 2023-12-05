@@ -11,7 +11,8 @@ from sqlalchemy.sql import text as sa_txt
 import sqlalchemy.exc 
 import requests
 
-import db 
+import models
+import web 
 
 class HRException(Exception): pass
 
@@ -64,6 +65,8 @@ def parse_args():
     export_parser = subparsers.add_parser("export", help="Get leave csv for all employee")
     export_parser.add_argument("file_csv",help="export into csv file [filename.csv]")
 
+    web_parser = subparsers.add_parser("web", help="Start web application")
+
     args = parser.parse_args()
     return args
 
@@ -76,7 +79,7 @@ def config_parse(dbname):
 
 def truncate_designations_table(args):
     db_uri = f"postgresql:///{args.dbname}"
-    session = db.get_session(db_uri)
+    session = models.get_session(db_uri)
     session.execute(sa_txt('''TRUNCATE TABLE hrms_designations cascade''').execution_options(autocommit=True))
     session.commit()
     
@@ -84,15 +87,15 @@ def create_table_in_db(args):
     config_parse(args.dbname)
     try:
         db_uri = f"postgresql:///{args.dbname}"
-        db.create_all(db_uri)
+        models.create_all(db_uri)
         logger.info("Tables created successfully!!")
         truncate_designations_table(args)
-        session = db.get_session(db_uri)
-        d1 = db.Designation(title="Staff Engineer", max_leaves=20)
-        d2 = db.Designation(title="Senior Engineer", max_leaves=18)
-        d3 = db.Designation(title="Junior Engineer", max_leaves=12)
-        d4 = db.Designation(title="Tech Lead", max_leaves=12)
-        d5 = db.Designation(title="Project Manager", max_leaves=15)
+        session = models.get_session(db_uri)
+        d1 = models.Designation(title="Staff Engineer", max_leaves=20)
+        d2 = models.Designation(title="Senior Engineer", max_leaves=18)
+        d3 = models.Designation(title="Junior Engineer", max_leaves=12)
+        d4 = models.Designation(title="Tech Lead", max_leaves=12)
+        d5 = models.Designation(title="Project Manager", max_leaves=15)
         session.add(d1)
         session.add(d2)
         session.add(d3)
@@ -105,7 +108,7 @@ def create_table_in_db(args):
 
 def truncate_employees_table(args):
     db_uri = f"postgresql:///{args.dbname}"
-    session = db.get_session(db_uri)
+    session = models.get_session(db_uri)
     session.execute(sa_txt('''TRUNCATE TABLE hrms_employees cascade''').execution_options(autocommit=True))
     session.commit()
     logger.info('Employees table truncated !!')
@@ -113,14 +116,14 @@ def truncate_employees_table(args):
 def load_data_employees(args):
     truncate_employees_table(args)
     db_uri = f"postgresql:///{args.dbname}"
-    session = db.get_session(db_uri)
+    session = models.get_session(db_uri)
     with open(args.employees_file) as f:
         reader = csv.reader(f)
         for lname, fname, title, email, phone in reader:
-            query = sa.select(db.Designation).where(db.Designation.title == title)
+            query = sa.select(models.Designation).where(models.Designation.title == title)
             designation = session.execute(query).scalar_one_or_none()
             logger.debug("Inserting %s", email)
-            employee = db.Employee(
+            employee = models.Employee(
                 last_name=lname,
                 first_name=fname,
                 email=email,
@@ -134,8 +137,8 @@ def load_data_employees(args):
 def load_data_leaves(args):
     try:
         db_uri = f"postgresql:///{args.dbname}"
-        session = db.get_session(db_uri)
-        d1 = db.Leave(date = args.date, employee_id = args.id, reason = args.reason)
+        session = models.get_session(db_uri)
+        d1 = models.Leave(date = args.date, employee_id = args.id, reason = args.reason)
         session.add(d1)
         session.commit()
         logger.info("Employee with id:%s added succesfully!",args.id)
@@ -163,14 +166,14 @@ def generate_qr_code_content(lname, fname, designation, email, phone,size):
 
 def get_info_employee(args):
     db_uri = f"postgresql:///{args.dbname}"
-    session = db.get_session(db_uri)
+    session = models.get_session(db_uri)
     try:
-        query = sa.select(db.Employee.first_name,
-                          db.Employee.last_name,
-                          db.Designation.title,
-                          db.Employee.email,
-                          db.Employee.phone).where(db.Employee.id == args.id,
-                                                   db.Employee.title_id == db.Designation.id)
+        query = sa.select(models.Employee.first_name,
+                          models.Employee.last_name,
+                          models.Designation.title,
+                          models.Employee.email,
+                          models.Employee.phone).where(models.Employee.id == args.id,
+                                                   models.Employee.title_id == models.Designation.id)
         
         employee_info = session.execute(query).fetchone()
         fname, lname, designation, email, phone = employee_info
@@ -201,27 +204,27 @@ Phone       : {phone}
 def get_employee_leave_data(args):
     id = args.empid
     db_uri = f"postgresql:///{args.dbname}"
-    session = db.get_session(db_uri)
+    session = models.get_session(db_uri)
     query = (
-        sa.select(sa.func.count(db.Employee.id),
-            db.Employee.first_name,
-            db.Employee.last_name,
-            db.Employee.email,
-            db.Designation.title,
-            db.Designation.max_leaves,
+        sa.select(sa.func.count(models.Employee.id),
+            models.Employee.first_name,
+            models.Employee.last_name,
+            models.Employee.email,
+            models.Designation.title,
+            models.Designation.max_leaves,
         )
         .where(
-            db.Employee.id == id,
-            db.Employee.id == db.Leave.employee_id,
-            db.Employee.title_id == db.Designation.id,
+            models.Employee.id == id,
+            models.Employee.id == models.Leave.employee_id,
+            models.Employee.title_id == models.Designation.id,
         )
         .group_by(
-            db.Employee.id,
-            db.Employee.first_name,
-            db.Employee.last_name,
-            db.Employee.email,
-            db.Designation.title, 
-            db.Designation.max_leaves,
+            models.Employee.id,
+            models.Employee.first_name,
+            models.Employee.last_name,
+            models.Employee.email,
+            models.Designation.title, 
+            models.Designation.max_leaves,
         )
     )
 
@@ -254,26 +257,26 @@ Leaves left:          {leaves_left}
 
     if employee_leave_data == []:
         db_uri = f"postgresql:///{args.dbname}"
-        session = db.get_session(db_uri)
+        session = models.get_session(db_uri)
         query = (
             sa.select(
-                db.Employee.first_name,
-                db.Employee.last_name,
-                db.Employee.email,
-                db.Designation.title,
-                db.Designation.max_leaves,
+                models.Employee.first_name,
+                models.Employee.last_name,
+                models.Employee.email,
+                models.Designation.title,
+                models.Designation.max_leaves,
                     )
             .where(
-                db.Employee.id == id,
-                db.Employee.title_id == db.Designation.id,
+                models.Employee.id == id,
+                models.Employee.title_id == models.Designation.id,
                 )
             .group_by(
-                db.Employee.id,
-                db.Employee.first_name,
-                db.Employee.last_name,
-                db.Employee.email,
-                db.Designation.title, 
-                db.Designation.max_leaves,
+                models.Employee.id,
+                models.Employee.first_name,
+                models.Employee.last_name,
+                models.Employee.email,
+                models.Designation.title, 
+                models.Designation.max_leaves,
                     )
                 )
         ideal_employee_leave_data = session.execute(query).fetchall()
@@ -304,8 +307,8 @@ def writer_csv(file,id,f_name, l_name, email, designation, max_leaves,leaves_lef
 
 def get_complete_leave_csv(args):
     db_uri = f"postgresql:///{args.dbname}"
-    session = db.get_session(db_uri)
-    query = sa.select(sa.func.count(db.Employee.id))
+    session = models.get_session(db_uri)
+    query = sa.select(sa.func.count(models.Employee.id))
     emp_count = session.execute(query).fetchall()
     file = args.file_csv
     for i in emp_count:
@@ -313,25 +316,25 @@ def get_complete_leave_csv(args):
     for i in range(1,count+1):
         id = i
         query = (
-        sa.select(sa.func.count(db.Employee.id),
-            db.Employee.first_name,
-            db.Employee.last_name,
-            db.Employee.email,
-            db.Designation.title,
-            db.Designation.max_leaves,
+        sa.select(sa.func.count(models.Employee.id),
+            models.Employee.first_name,
+            models.Employee.last_name,
+            models.Employee.email,
+            models.Designation.title,
+            models.Designation.max_leaves,
         )
         .where(
-            db.Employee.id == id,
-            db.Employee.id == db.Leave.employee_id,
-            db.Employee.title_id == db.Designation.id,
+            models.Employee.id == id,
+            models.Employee.id == models.Leave.employee_id,
+            models.Employee.title_id == models.Designation.id,
         )
         .group_by(
-            db.Employee.id,
-            db.Employee.first_name,
-            db.Employee.last_name,
-            db.Employee.email,
-            db.Designation.title, 
-            db.Designation.max_leaves,
+            models.Employee.id,
+            models.Employee.first_name,
+            models.Employee.last_name,
+            models.Employee.email,
+            models.Designation.title, 
+            models.Designation.max_leaves,
                 )
             )
 
@@ -345,23 +348,23 @@ def get_complete_leave_csv(args):
         if employee_leave_data == []:
             query = (
             sa.select(
-                db.Employee.first_name,
-                db.Employee.last_name,
-                db.Employee.email,
-                db.Designation.title,
-                db.Designation.max_leaves,
+                models.Employee.first_name,
+                models.Employee.last_name,
+                models.Employee.email,
+                models.Designation.title,
+                models.Designation.max_leaves,
                     )
             .where(
-                db.Employee.id == id,
-                db.Employee.title_id == db.Designation.id,
+                models.Employee.id == id,
+                models.Employee.title_id == models.Designation.id,
                 )
             .group_by(
-                db.Employee.id,
-                db.Employee.first_name,
-                db.Employee.last_name,
-                db.Employee.email,
-                db.Designation.title, 
-                db.Designation.max_leaves,
+                models.Employee.id,
+                models.Employee.first_name,
+                models.Employee.last_name,
+                models.Employee.email,
+                models.Designation.title, 
+                models.Designation.max_leaves,
                     )
                 )
             ideal_employee_leave_data = session.execute(query).fetchall()
@@ -369,6 +372,11 @@ def get_complete_leave_csv(args):
                 f_name, l_name, email, designation, max_leaves = item
                 leaves_left = max_leaves
                 writer_csv(file,id,f_name, l_name, email, designation, max_leaves,leaves_left)
+
+def handle_web(args):
+    web.app.config["SQLALCHEMY_DATABASE_URI"] = f"postgresql:///{args.dbname}"
+    web.db.init_app(web.app)
+    web.app.run()
 
 def main():
     if not os.path.exists('vcards'):
@@ -381,7 +389,8 @@ def main():
                       "info":get_info_employee,
                       "leave":load_data_leaves,
                       "leave_info":get_employee_leave_data,
-                      "export":get_complete_leave_csv}
+                      "export":get_complete_leave_csv,
+                      "web": handle_web}
         operations[args.subcommand](args)
         
     except HRException as e:
