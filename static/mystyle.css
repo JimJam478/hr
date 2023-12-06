@@ -1,0 +1,32 @@
+body {
+    font-family: 'Space Grotesk';
+    font-size: 22px;
+}
+
+#Details{
+    padding-left: 80px;
+    color: aliceblue;
+}
+
+#emp_list{
+    border-right:1px solid aliceblue;
+}
+
+#form{
+    padding-left: 80px;
+}
+
+#link{
+    color: #ffffff;
+    text-decoration: none;
+}
+
+#link:hover{
+    color:  #FFE81F; 
+    text-decoration:none; 
+    cursor:pointer;  
+}
+
+#button{
+    padding-left: 600px;
+}
