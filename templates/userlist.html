@@ -1,12 +1,16 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <h1> List of employees </h1>
+<div class="container">
+    <br>
+    <h1 style="color: aliceblue;"> List of employees </h1>
     <p>
       <ol>
         {%for u in users %}
-        <li> <a href="{{url_for('employee_details', empid=u.id)}}">{{u.first_name}} </a></li>
+        <li> <a id="link" href="{{url_for('employee_details', empid=u.id)}}">{{u.first_name}} </a></li>
         {%endfor%}
       </ol>
     </p>
+  </br>
+</div>
 {% endblock %}

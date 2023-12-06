@@ -1,45 +1,74 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <h1> Details for {{user.first_name}}  {{user.last_name}}</h1>
-    <h2> {{user.title.title}} </h2>
-    <table>
-      <tr>
-        <th> First name </th>
-        <td> {{user.first_name}}</td>
-      </tr>
-      <tr>
-        <th> Last name </th>
-        <td> {{user.last_name}}</td>
-      </tr>
-      <tr>
-        <th> Email </th>
-        <td> {{user.email}}</td>
-      </tr>
-
-      <tr>
-        <th> Phone </th>
-        <td> {{user.phone}}</td>
-      </tr>
-    </table>
-
-    <h2> Leave Details </h2>
-    <table>
-      <tr>
-        <th> Total Leaves:  </th>
-        <td> {{leave.total_leaves}}</td>
-      </tr>
-      <tr>
-        <th> Leaves Taken: </th>
-        <td> {{leave.leaves_taken}}</td>
-      </tr>
-      <tr>
-        <th> Leaves Remaining: </th>
-        <td> {{leave.leaves_remaining}}</td>
-      </tr>
-    </table>
-    <a href="{{url_for('employees')}}"> Back to list of employees </a>
-    <br>
-    <a href="{{url_for('add_employee_leaves',empid=user.id)}}">Add leaves</a>
+<div class="container">
+  <div class="row">
+    <div class="col-3" id="emp_list">
+      <br>
+  <h1 style="color: aliceblue;"> List of employees </h1>
+  
+    <ol>
+      {%for u in users %}
+      <li> <a id="link" href="{{url_for('employee_details', empid=u.id)}}">{{u.first_name}} </a></li>
+      {%endfor%}
+    </ol>
   </br>
+  </div>
+
+<div class="col-9">
+  <br>
+    <h1 style="color: white; padding-left: 50px;"> Details for {{user.first_name}}  {{user.last_name}}</h1>
+    <h2 style="color: white; padding-left: 50px;"> {{user.title.title}} </h2>
+    <table>
+      <tr>
+        <th id="Details"> First name:  </th>
+        <td id="Details"> {{user.first_name}}</td>
+      </tr>
+      <tr>
+        <th id="Details"> Last name:  </th>
+        <td id="Details"> {{user.last_name}}</td>
+      </tr>
+      <tr>
+        <th id="Details"> Email:  </th>
+        <td id="Details"> {{user.email}}</td>
+      </tr>
+
+      <tr>
+        <th id="Details"> Phone:  </th>
+        <td id="Details"> {{user.phone}}</td>
+      </tr>
+    
+    </table>
+    <br>
+    <h3 id="Details"> Leave Details </h3>
+    <table>
+      <tr>
+        <th id="Details"> Total Leaves:   </th>
+        <td id="Details"> {{leave.total_leaves}}</td>
+      </tr>
+      <tr>
+        <th id="Details"> Leaves Taken:  </th>
+        <td id="Details"> {{leave.leaves_taken}}</td>
+      </tr>
+      <tr>
+        <th id="Details"> Leaves Remaining: </th>
+        <td id="Details"> {{leave.leaves_remaining}}</td>
+      </tr>
+    </br>
+    </table>
+   
+  <div id="button">
+    <a id="link" href="{{url_for('employee_details', empid=user.id-1)}}"><button type="button" class="btn btn-outline-light"><<<</button></a>&nbsp;&nbsp;&nbsp;
+    <a id="link" href="{{url_for('employee_details', empid=user.id+1)}}"><button type="button" class="btn btn-outline-light">>>></button></a>
+    <br>
+    <div style="padding-top:15px;">
+    <a id="link" href="{{url_for('add_employee_leaves',empid=user.id)}}"><button type="button" class="btn btn-outline-light">Add leaves</button></a>
+  </div>   
+  </br>
+  </div>
+
+</div>  
+</div>
+</div>
+
 {% endblock %}

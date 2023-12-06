@@ -2,16 +2,96 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h3> Add leave for  </h3>
-<form action="{{url_for('add_employee_leaves', empid=empid)}}" method=post>
-    <dl>
-        <dt>Date:
-        <dd><input type=date name="Date"  required/>
-        <dt>Reason:
-        <dd><input type=text name="Reason" required/>
-        </dl>
+<div class="container">
+    <div class="row">
+      <div class="col-3" id="emp_list">
+        <br>
+    <h1 style="color: aliceblue;"> List of employees </h1>
+    
+      <ol>
+        {%for u in users %}
+        <li> <a id="link" href="{{url_for('employee_details', empid=u.id)}}">{{u.first_name}} </a></li>
+        {%endfor%}
+      </ol>
+    </br>
+    </div>
+  
+  <div class="col-9">
     <br>
-<p><input type=submit value=Enter>
- </form>
-
+      <h1 style="color: white; padding-left: 50px;"> Details for {{user.first_name}}  {{user.last_name}}</h1>
+      <h2 style="color: white; padding-left: 50px;"> {{user.title.title}} </h2>
+      <table>
+        <tr>
+          <th id="Details"> First name:  </th>
+          <td id="Details"> {{user.first_name}}</td>
+        </tr>
+        <tr>
+          <th id="Details"> Last name:  </th>
+          <td id="Details"> {{user.last_name}}</td>
+        </tr>
+        <tr>
+          <th id="Details"> Email:  </th>
+          <td id="Details"> {{user.email}}</td>
+        </tr>
+  
+        <tr>
+          <th id="Details"> Phone:  </th>
+          <td id="Details"> {{user.phone}}</td>
+        </tr>
+      
+      </table>
+      <br>
+      <h3 id="Details"> Leave Details </h3>
+      <table>
+        <tr>
+          <th id="Details"> Total Leaves:   </th>
+          <td id="Details"> {{leave.total_leaves}}</td>
+        </tr>
+        <tr>
+          <th id="Details"> Leaves Taken:  </th>
+          <td id="Details"> {{leave.leaves_taken}}</td>
+        </tr>
+        <tr>
+          <th id="Details"> Leaves Remaining: </th>
+          <td id="Details"> {{leave.leaves_remaining}}</td>
+        </tr>
+      </br>
+      </table>
+      
+      <div id="button">
+        <a id="link" href="{{url_for('employee_details', empid=user.id-1)}}"><button type="button" class="btn btn-outline-light"><<<</button></a>&nbsp;&nbsp;&nbsp;
+        <a id="link" href="{{url_for('employee_details', empid=user.id+1)}}"><button type="button" class="btn btn-outline-light">>>></button></a>
+        <br>
+        <div style="padding-top:15px;">
+        <a id="link" href="{{url_for('add_employee_leaves',empid=user.id)}}"><button type="button" class="btn btn-outline-light">Add leaves</button></a>
+      </div>   
+      </br>
+      </div>
+    
+    <h3 style="padding-top: 30px;" id="Details"> Add leave: </h3>
+    <form action="{{url_for('add_employee_leaves', empid=empid)}}" method=post class="row g-3 needs-validation" novalidate >
+        <div class="col-md-4">
+          <label id="Details" for="validationCustom01" class="form-label">Date</label>
+          <div style="padding-left: 80px;" class="input-group has-validation">
+          <input type=date class="form-control" id="validationCustom01" name="Date" required>
+          <div class="invalid-feedback">
+            Please provide a valid date.
+          </div>
+        </div>
+        </div>
+        <div class="col-md-4">
+          <label style="color: aliceblue;" for="validationCustom02" class="form-label">Reason</label>
+          <div class="input-group has-validation">
+          <input type="text" class="form-control" id="validationCustom02" value="Laziness" name="Reason" required>
+           <div class="invalid-feedback">
+            Please provide a valid reason.
+          </div>
+        </div>
+        </div>
+       <div style="padding-left: 90px;" class="col-12">
+          <button class="btn btn-outline-light" type=submit>Submit Leave</button>
+        </div>
+      </form>
+    
+  
 {% endblock %}
