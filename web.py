@@ -83,6 +83,11 @@ def employee_details(empid):
 
 @app.route("/<int:empid>/add_leave", methods = ['GET','POST'])
 def add_employee_leaves(empid):
+    leave_detail = get_leave_details(empid)
+    query = db.select(models.Employee).order_by(models.Employee.first_name)
+    users = db.session.execute(query).scalars()
+    query = db.select(models.Employee).where(models.Employee.id == empid)
+    user = db.session.execute(query).scalar()
     if flask.request.method == "POST":
         date = flask.request.form['Date']
         reason = flask.request.form['Reason']
@@ -91,4 +96,4 @@ def add_employee_leaves(empid):
                             reason=reason)
         db.session.add(query)
         db.session.commit()
-    return flask.render_template("add_leaves.html" , empid=empid)
+    return flask.render_template("add_leaves.html",empid=empid, user=user, users=users,leave = leave_detail)
