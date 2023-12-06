@@ -1,0 +1,17 @@
+
+{% extends 'base.html' %}
+
+{% block content %}
+<h3> Add leave for  </h3>
+<form action="{{url_for('add_employee_leaves', empid=empid)}}" method=post>
+    <dl>
+        <dt>Date:
+        <dd><input type=date name="Date"  required/>
+        <dt>Reason:
+        <dd><input type=text name="Reason" required/>
+        </dl>
+    <br>
+<p><input type=submit value=Enter>
+ </form>
+
+{% endblock %}

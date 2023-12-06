@@ -22,6 +22,24 @@
         <td> {{user.phone}}</td>
       </tr>
     </table>
+
+    <h2> Leave Details </h2>
+    <table>
+      <tr>
+        <th> Total Leaves:  </th>
+        <td> {{leave.total_leaves}}</td>
+      </tr>
+      <tr>
+        <th> Leaves Taken: </th>
+        <td> {{leave.leaves_taken}}</td>
+      </tr>
+      <tr>
+        <th> Leaves Remaining: </th>
+        <td> {{leave.leaves_remaining}}</td>
+      </tr>
+    </table>
     <a href="{{url_for('employees')}}"> Back to list of employees </a>
-</p>
+    <br>
+    <a href="{{url_for('add_employee_leaves',empid=user.id)}}">Add leaves</a>
+  </br>
 {% endblock %}
