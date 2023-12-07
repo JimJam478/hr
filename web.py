@@ -1,6 +1,6 @@
 import flask
-from flask import flash
-from flask_sqlalchemy import SQLAlchemy
+from flask import flash,redirect,url_for
+from flask_sqlalchemy import SQLAlchemy 
 
 import models
 
@@ -96,4 +96,5 @@ def add_employee_leaves(empid):
                             reason=reason)
         db.session.add(query)
         db.session.commit()
+        return redirect(url_for("add_employee_leaves",empid=empid))
     return flask.render_template("add_leaves.html",empid=empid, user=user, users=users,leave = leave_detail)
