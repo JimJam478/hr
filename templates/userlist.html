@@ -1,18 +1,27 @@
 {% extends 'base.html' %}
 
 {% block content %}
+
 <div class="container">
-  <br>
-    <h1 style="color: aliceblue;"> List of employees </h1>
-    <div id="scroll" style="height: 700px; overflow-y: scroll;">
+  <div class="row">
+    <div class="col-4" id="emp_list" >
+      <br>
     <p>
+      <h1 id="iceblue"> List of Employees </h1>
+      <div id="scroll" style="height: 700px; overflow-y: scroll;">
       <ol>
         {%for u in users %}
-        <li style="color: aliceblue;"> <a id="link" href="{{url_for('employee_details', empid=u.id)}}">{{u.first_name}}. {{u.last_name}} </a></li>
+        <li id="iceblue">  <a id="link" class="userlink" href="{{url_for('employee_details', empid=u.id)}}">{{u.first_name}} {{u.last_name}}</a></li>
         {%endfor%}
       </ol>
+    </div>
     </p>
-  </br>
-  </div>
+    </div>
+    <div class="col-8">
+      <br>
+    <p style="padding-top: 15px;" id="userdetails">  
+    </p>    
+    </div>
+    </div>
 </div>
 {% endblock %}
