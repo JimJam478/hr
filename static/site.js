@@ -70,44 +70,9 @@ function gotEmployees(data) {
 `}
 
 $(function() {
-    $("a.userlink").click(function (ev) {
+    $("a.userlink").one("click", function (ev) {
         $.get(ev.target.href, gotEmployees);
         ev.preventDefault();
+        $(this).click(function () { return false; });
         });
-});
-
-$("#prevBtn").click(function() {
-  // Get index of current employee
-  const currentIndex = employeesData.indexOf(data);
-  // Check if there's a previous employee
-  if (currentIndex > 0) {
-    // Get previous employee data
-    const prevEmployee = employeesData[currentIndex - 1];
-    // Load details for previous employee
-    gotEmployees(prevEmployee);
-  }
-});
-
-$("#nextBtn").click(function() {
-  // Get index of current employee
-  const currentIndex = employeesData.indexOf(data);
-  // Check if there's a next employee
-  if (currentIndex < employeesData.length - 1) {
-    // Get next employee data
-    const nextEmployee = employeesData[currentIndex + 1];
-    // Load details for next employee
-    gotEmployees(nextEmployee);
-  }
-});
-
-
-$(function() {
-$("a.userlink").click(function(ev) {
-  $.get(ev.target.href, gotEmployees);
-  ev.preventDefault();
-});
-
-// Load initial employee data
-const initialEmployee = employeesData[0];
-gotEmployees(initialEmployee);
 });
