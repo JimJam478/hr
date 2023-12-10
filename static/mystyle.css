@@ -1,7 +1,11 @@
-body {
+.body {
     font-family: 'Space Grotesk';
     font-size: 22px;
 }
+
+#iceblue{
+    color: aliceblue;
+} 
 
 #Details{
     padding-left: 80px;
@@ -17,7 +21,7 @@ body {
 }
 
 #link{
-    color: #ffffff;
+    color: aliceblue;
     text-decoration: none;
 }
 
@@ -25,6 +29,16 @@ body {
     color:  #FFE81F; 
     text-decoration:none; 
     cursor:pointer;  
+}
+
+#link:focus {
+    color: black;
+    background-color: #FFE81F;    
+}
+
+#link.active {
+    color: black;
+    background-color: #FFE81F;
 }
 
 #button{
