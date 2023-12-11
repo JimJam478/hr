@@ -5,6 +5,8 @@ import sqlalchemy as sa
 
 import models
 
+class HRException(Exception): pass
+
 app = flask.Flask("hrms")
 db = models.SQLAlchemy(model_class=models.HRDBBase)
 
@@ -20,19 +22,23 @@ def employees():
 
 @app.route("/employees/<int:empid>", methods=(["GET","POST"]))
 def employee_details(empid):
-    query = db.select(models.Employee).where(models.Employee.id == empid)
-    user = db.session.execute(query).scalar()
-    leave_query = db.select(sa.func.count(models.Leave.id)).where(models.Leave.employee_id == empid)
-    leave = db.session.execute(leave_query).scalar()
-    if flask.request.method == "POST":
-        date = flask.request.form['Date']
-        reason = flask.request.form['Reason']
-        query = models.Leave(employee_id=empid,
-                            date=date,
-                            reason=reason)
-        db.session.add(query)
-        db.session.commit()
-        return redirect(url_for("employees"))
+    try:
+        query = db.select(models.Employee).where(models.Employee.id == empid)
+        user = db.session.execute(query).scalar()
+        leave_query = db.select(sa.func.count(models.Leave.id)).where(models.Leave.employee_id == empid)
+        leave = db.session.execute(leave_query).scalar()
+        if flask.request.method == "POST":
+            date = flask.request.form['Date']   
+            reason = flask.request.form['Reason']
+            leave = models.Leave(employee_id=empid,
+                                date=date,
+                                reason=reason)
+            db.session.add(leave)
+            db.session.commit()
+            return redirect(url_for("employees"))
+        
+    except HRException as e:
+        raise HRException (f'Employee with id: {empid} does not exist')
 
     ret = { "id": user.id,
         "fname" : user.first_name,   
