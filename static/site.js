@@ -38,10 +38,6 @@ function gotEmployees(data) {
       </tr>
     </br>
     </table>
-    <div id="button">
-      <button id="#prevBtn" type="button" class="btn btn-outline-light"><<<</button>&nbsp;&nbsp;&nbsp;
-      <button id="#nextBtn" type="button" class="btn btn-outline-light">>>></button>
-  </div> 
     <br>
     <h3 id="Details"> Add leave: </h3>
     <br>
