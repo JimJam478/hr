@@ -18,7 +18,6 @@ def index():
 def employees():
     query = db.select(models.Employee)
     users = db.session.execute(query).scalars()
-
     ret = {}
     for user in users:
         ret[user.id] = {"fname" : user.first_name,   
