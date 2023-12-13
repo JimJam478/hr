@@ -16,9 +16,18 @@ def index():
   
 @app.route("/employees")
 def employees():
-    query = db.select(models.Employee).order_by(models.Employee.first_name)
+    query = db.select(models.Employee)
     users = db.session.execute(query).scalars()
-    return flask.render_template("userlist.html", users = users)
+
+    ret = {}
+    for user in users:
+        ret[user.id] = {"fname" : user.first_name,   
+           "lname" : user.last_name,
+           "title" : user.title.title,
+           "email" : user.email,
+           "phone" : user.phone
+           }
+    return flask.jsonify(ret)
 
 @app.route("/employees/<int:empid>", methods=(["GET","POST"]))
 def employee_details(empid):
