@@ -24,7 +24,7 @@ function gotEmployees(data) {
     <br>
     <h3 id="Details"> Leave Details </h3>
     <table>
-      <tr>
+      <tr>  
         <th id="Details"> Total Leaves:   </th>
         <td id="Details"> ${data.total_leaves}</td>
       </tr>
